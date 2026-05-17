@@ -75,6 +75,11 @@ Version choices are based on current official Android documentation:
 |       |       |-- App.kt
 |       |       `-- theme/Theme.kt
 |       `-- res/
+|           `-- drawable-nodpi/logoapp.png
+|-- scripts/
+|   |-- check-env.ps1
+|   |-- build-debug.ps1
+|   `-- git-status.ps1
 |-- plano_3meses.html
 |-- readme.md
 |-- settings.gradle.kts
@@ -84,7 +89,15 @@ Version choices are based on current official Android documentation:
 
 ## App screens
 
-1. **Inicio**
+1. **Welcome / Entrada**
+   - Large in-app `logoapp.png`
+   - App title and subtitle
+   - Current stats mini row
+   - Today's workout, drink rotation, sleep target, and checklist progress
+   - Primary entry button
+   - Quick actions for Treino, Bebidas, and Compras
+
+2. **Inicio**
    - Current stats
    - Today's workout
    - Today's drink rotation
@@ -92,34 +105,34 @@ Version choices are based on current official Android documentation:
    - Daily checklist
    - Creatine and whey guidance
 
-2. **Semana**
+3. **Semana**
    - Work schedule
    - Morning bike/walk routine
    - Gym Tuesday-Saturday
    - Sleep schedule
    - Adjustment rules
 
-3. **Refeicoes**
+4. **Refeicoes**
    - Budget Bytes-style pasta salads
    - Chicken breast meal prep
    - Controlled pizza options
    - Portion guidance for pasta
 
-4. **Bebidas**
+5. **Bebidas**
    - Agua com pepino e menta
    - Agua lima + menta
    - Agua morango + lima + menta
    - Batido detox verde
    - ACV shot with safety note
 
-5. **Treino**
+6. **Treino**
    - Gym Workout - Terca
    - Gym Workout - Quarta
    - Gym Workout - Quinta
    - Gym Workout - Sexta
    - Gym Workout - Sabado
 
-6. **Compras**
+7. **Compras**
    - Proteins
    - Pasta and carbs
    - Vegetables and salads
@@ -127,7 +140,7 @@ Version choices are based on current official Android documentation:
    - Sauces and supplements
    - Meal prep tools
 
-7. **Progresso**
+8. **Progresso**
    - Weekly weight
    - Weekly abdomen
    - Weekly checklist
@@ -152,7 +165,21 @@ Version choices are based on current official Android documentation:
 8. To build an APK:
    - `Build > Build Bundle(s) / APK(s) > Build APK(s)`
 
-Command-line builds require Java/Gradle on PATH or a generated Gradle wrapper. This workspace currently has Android Studio installed, but Java/Gradle are not on the shell PATH.
+Command-line builds require Java/Gradle on PATH or a generated Gradle wrapper. This workspace includes helper scripts that explain what is missing and use `gradlew.bat` automatically when it exists.
+
+## Helper scripts
+
+Run these from PowerShell. If your machine blocks `.ps1` files, use the `ExecutionPolicy Bypass` form shown here:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-env.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-debug.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\git-status.ps1
+```
+
+- `check-env.ps1` checks the Android Studio bundled JDK, `local.properties`, Android SDK path, and Gradle wrapper.
+- `build-debug.ps1` runs `gradlew.bat assembleDebug` when the wrapper exists. If not, it prints Android Studio build steps and exits clearly.
+- `git-status.ps1` shows branch, last commit, and short status using a safe-directory git call.
 
 ## What is already implemented
 
@@ -160,13 +187,18 @@ Command-line builds require Java/Gradle on PATH or a generated Gradle wrapper. T
 - Kotlin data models.
 - Seeded plan content in `PlanContent.kt`.
 - Persistent checklist/progress state with DataStore.
-- Compose UI with bottom navigation.
+- Compose UI with a welcome/front screen and bottom navigation.
+- `logoapp.png` copied into `app/src/main/res/drawable-nodpi/logoapp.png`.
+- `welcome` route set as the app start destination.
+- Dashboard header keeps the app identity visible with a smaller logo.
+- Reusable Compose helpers for logo, primary actions, quick actions, today summary, metric pills, navigation, drink rotation, workout/rest text, and progress percentages.
 - Dashboard, week, meals, drinks, workout, shopping, and progress screens.
 - Three flavored waters:
   - cucumber + mint
   - lime + mint
   - strawberry + lime + mint
 - `plano_3meses.html` updated with the strawberry drink.
+- PowerShell scripts for environment checking, debug build, and git status.
 
 ## Test checklist
 
@@ -174,6 +206,9 @@ Use this after opening the project in Android Studio:
 
 - App builds successfully.
 - App opens offline.
+- First screen shows the `logoapp` image.
+- `Entrar no plano` opens Dashboard.
+- Quick buttons open Treino, Bebidas, and Compras.
 - Bottom navigation reaches every screen.
 - Checklist items toggle.
 - Checklist state persists after closing and reopening the app.
@@ -181,6 +216,8 @@ Use this after opening the project in Android Studio:
 - Tuesday-Saturday workouts appear in the Gym Workout format.
 - Drinks include cucumber mint, lime mint, and strawberry lime mint.
 - Shopping list includes whey, creatine, pasta, chicken, limes, mint, and strawberries.
+- `.\scripts\check-env.ps1` prints environment status.
+- `.\scripts\build-debug.ps1` builds with Gradle wrapper or fails gracefully with Android Studio instructions.
 
 ## Roadmap
 
@@ -233,12 +270,22 @@ Core objectives:
 4. Keep the UI clean, mobile-first, fast, and easy to scan.
 
 Screens:
+0. Welcome
+- Show large centered logo from `R.drawable.logoapp`.
+- Show title: Plano 3 Meses.
+- Show subtitle: Treino, refeicoes, bebidas e progresso.
+- Show current stats mini row: 112.4 kg, 29.3% gordura, 107 cm abdomen.
+- Show today's workout/rest, drink rotation, sleep target, and checklist progress.
+- Add primary button: Entrar no plano.
+- Add quick buttons: Treino de hoje, Bebidas, Compras.
+
 1. Dashboard
 - Show current stats: 112.4 kg, 187 cm, body fat 29.3%, abdomen 107 cm, BMR 2188.
 - Show today's gym workout if Tuesday-Saturday.
 - Show today's drink rotation.
 - Show bedtime target: lights off 22:10, wake 5:55.
 - Show checklist summary.
+- Show a compact logo header.
 
 2. Semana
 - Work schedule: Monday-Saturday 8:00-17:00.
@@ -342,9 +389,13 @@ Sources to reference in README:
 Acceptance criteria:
 - App builds successfully in Android Studio.
 - App works offline.
+- Welcome route is the start destination.
+- Welcome screen shows `logoapp.png`.
+- Dashboard keeps a compact logo header.
 - All main screens are reachable.
 - Checklist state persists after app restart.
 - Tuesday-Saturday gym plan is visible and readable.
 - Drinks include cucumber mint, lime mint, and strawberry lime mint.
 - README includes setup/build instructions and this project spec.
+- Helper scripts exist for environment check, debug build, and git status.
 ```

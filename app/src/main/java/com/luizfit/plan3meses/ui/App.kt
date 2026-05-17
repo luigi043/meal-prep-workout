@@ -1,6 +1,8 @@
 package com.luizfit.plan3meses.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -32,17 +35,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.luizfit.plan3meses.R
 import com.luizfit.plan3meses.data.ChecklistTask
 import com.luizfit.plan3meses.data.MealDay
 import com.luizfit.plan3meses.data.PlanContent
@@ -79,7 +86,9 @@ fun Plano3MesesApp() {
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route ?: destinations.first().route
+    val currentRoute = backStackEntry?.destination?.route ?: "welcome"
+    val showChrome = currentRoute != "welcome"
+    val goTo: (String) -> Unit = { route -> navController.goTo(route) }
 
     val onToggle: (String, Boolean) -> Unit = { id, checked ->
         scope.launch { repository.setCompleted(id, checked) }
@@ -87,53 +96,66 @@ fun Plano3MesesApp() {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("Plano 3 Meses", fontWeight = FontWeight.Bold)
-                        Text(
-                            "Luiz - treino, refeicoes, bebidas e progresso",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+            if (showChrome) {
+                TopAppBar(
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(R.drawable.logoapp),
+                                contentDescription = "Logo Plano 3 Meses",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .width(42.dp)
+                                    .height(42.dp)
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Column {
+                                Text("Plano 3 Meses", fontWeight = FontWeight.Bold)
+                                Text(
+                                    "Luiz - treino, refeicoes, bebidas e progresso",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
-                }
-            )
+                )
+            }
         },
         bottomBar = {
-            NavigationBar {
-                destinations.forEach { destination ->
-                    NavigationBarItem(
-                        selected = currentRoute == destination.route,
-                        onClick = {
-                            if (currentRoute != destination.route) {
-                                navController.navigate(destination.route) {
-                                    launchSingleTop = true
-                                    restoreState = true
-                                    popUpTo(destinations.first().route) { saveState = true }
-                                }
+            if (showChrome) {
+                NavigationBar {
+                    destinations.forEach { destination ->
+                        NavigationBarItem(
+                            selected = currentRoute == destination.route,
+                            onClick = { goTo(destination.route) },
+                            icon = { Text(destination.short, fontWeight = FontWeight.Bold) },
+                            label = {
+                                Text(
+                                    destination.label,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }
-                        },
-                        icon = { Text(destination.short, fontWeight = FontWeight.Bold) },
-                        label = {
-                            Text(
-                                destination.label,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = destinations.first().route,
+            startDestination = "welcome",
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            composable("welcome") {
+                WelcomeScreen(
+                    progress = progress,
+                    goTo = goTo
+                )
+            }
             composable("dashboard") {
                 DashboardScreen(progress = progress, onToggle = onToggle)
             }
@@ -165,6 +187,56 @@ fun Plano3MesesApp() {
 }
 
 @Composable
+private fun WelcomeScreen(
+    progress: ProgressState,
+    goTo: (String) -> Unit
+) {
+    val today = LocalDate.now().dayOfWeek
+    val drink = todayDrinkRotation(today)
+    val dailyIds = PlanContent.dashboardTasks.map { it.id }
+    val dailyCompleted = progress.completionCountFor(dailyIds)
+
+    ScreenColumn {
+        item {
+            LogoHeader(compact = false)
+        }
+        item {
+            PlanCard("Plano 3 Meses", "Treino, refeicoes, bebidas e progresso") {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    MetricPill("112.4 kg", "peso", Modifier.weight(1f))
+                    MetricPill("29.3%", "gordura", Modifier.weight(1f))
+                    MetricPill("107 cm", "abdomen", Modifier.weight(1f))
+                }
+            }
+        }
+        item {
+            TodaySummaryCard(
+                dayName = today.portugueseName(),
+                workout = todayWorkoutOrRest(today),
+                drink = drink.title,
+                sleep = "22:10 dormir - 5:55 acordar",
+                progressText = "$dailyCompleted/${dailyIds.size} tarefas - ${progressPercent(dailyCompleted, dailyIds.size)}%"
+            )
+        }
+        item {
+            PrimaryActionButton("Entrar no plano") {
+                goTo("dashboard")
+            }
+        }
+        item {
+            QuickActionRow(
+                actions = listOf(
+                    "Treino de hoje" to "workout",
+                    "Bebidas" to "drinks",
+                    "Compras" to "shopping"
+                ),
+                goTo = goTo
+            )
+        }
+    }
+}
+
+@Composable
 private fun DashboardScreen(
     progress: ProgressState,
     onToggle: (String, Boolean) -> Unit
@@ -175,6 +247,9 @@ private fun DashboardScreen(
     val completedCount = progress.completedIds.size
 
     ScreenColumn {
+        item {
+            LogoHeader(compact = true)
+        }
         item {
             SectionHeader("Dashboard", "Hoje: ${today.portugueseName()}")
         }
@@ -470,6 +545,117 @@ private fun SupplementCard() {
 }
 
 @Composable
+private fun LogoHeader(compact: Boolean) {
+    val imageHeight = if (compact) 104.dp else 238.dp
+    val verticalPadding = if (compact) 10.dp else 18.dp
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = verticalPadding, horizontal = 18.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.logoapp),
+                contentDescription = "Logo Plano 3 Meses",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(imageHeight)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrimaryActionButton(
+    label: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(label, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+private fun QuickActionRow(
+    actions: List<Pair<String, String>>,
+    goTo: (String) -> Unit
+) {
+    PlanCard("Atalhos rapidos", "Abrir diretamente o que precisas agora") {
+        actions.forEach { (label, route) ->
+            OutlinedButton(
+                onClick = { goTo(route) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TodaySummaryCard(
+    dayName: String,
+    workout: String,
+    drink: String,
+    sleep: String,
+    progressText: String
+) {
+    PlanCard("Hoje - $dayName", "Objetivo pratico para cumprir sem complicar") {
+        InfoLine("Treino", workout)
+        InfoLine("Bebida", drink)
+        InfoLine("Sono", sleep)
+        InfoLine("Checklist", progressText)
+    }
+}
+
+@Composable
+private fun MetricPill(
+    value: String,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        modifier = modifier
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp, horizontal = 6.dp)
+        ) {
+            Text(
+                value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
 private fun ScreenColumn(content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -573,6 +759,48 @@ private fun LinkButton(
     ) {
         Text(label)
     }
+}
+
+private fun NavHostController.goTo(route: String) {
+    if (currentDestination?.route == route) {
+        return
+    }
+
+    navigate(route) {
+        launchSingleTop = true
+        restoreState = true
+        popUpTo("welcome") {
+            saveState = true
+        }
+    }
+}
+
+private fun todayWorkoutOrRest(dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek): String {
+    val workout = PlanContent.workoutFor(dayOfWeek)
+    if (workout != null) {
+        return "${workout.title}: ${workout.focus}"
+    }
+
+    return when (dayOfWeek) {
+        DayOfWeek.MONDAY -> "Bike 15 min + caminhada 20 min. Sem ginasio, preparar a semana."
+        DayOfWeek.SUNDAY -> "Descanso ativo, compras, meal prep e caminhada leve opcional."
+        else -> "Movimento leve e recuperacao."
+    }
+}
+
+private fun todayDrinkRotation(dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek): Recipe {
+    return PlanContent.drinkFor(dayOfWeek)
+}
+
+private fun ProgressState.completionCountFor(ids: List<String>): Int {
+    return ids.count { completedIds.contains(it) }
+}
+
+private fun progressPercent(completed: Int, total: Int): Int {
+    if (total <= 0) {
+        return 0
+    }
+    return (completed * 100) / total
 }
 
 private fun DayOfWeek.portugueseName(): String = when (this) {
