@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Plano 3 Meses - Luiz</title>
+<style>
+  :root {
+    --ink: #202124;
+    --muted: #69716f;
+    --line: #dfe6e2;
+    --paper: #fbfaf6;
+    --panel: #ffffff;
+    --forest: #1d6b4f;
+    --forest-soft: #e7f3ed;
+    --clay: #b45a36;
+    --clay-soft: #fff0e8;
+    --marine: #235f85;
+    --marine-soft: #e8f2f7;
+    --plum: #75527d;
+    --plum-soft: #f4ecf6;
+    --gold: #9b6a19;
+    --gold-soft: #fff5d9;
+    --danger: #a94442;
+    --danger-soft: #fff0ef;
+    --radius: 8px;
+    --shadow: 0 12px 30px rgba(44, 52, 48, 0.08);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    min-height: 100vh;
+    font-family: var(--font);
+    background:
+      linear-gradient(180deg, rgba(231, 243, 237, 0.9), rgba(251, 250, 246, 0.95) 340px),
+      var(--paper);
+    color: var(--ink);
+    font-size: 16px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 14px 16px 12px;
+    background: rgba(251, 250, 246, 0.94);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+  }
+  .topbar h1 { font-size: 18px; line-height: 1.2; letter-spacing: 0; }
+  .topbar p { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+
+  .nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 10px 16px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  button {
+    font: inherit;
+  }
+  .nav button,
+  .day-tab {
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: #3f4744;
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+  }
+  .nav button.active,
+  .day-tab.active {
+    color: #fff;
+    background: var(--forest);
+    border-color: var(--forest);
+  }
+
+  .sec { display: none; padding: 16px; max-width: 980px; margin: 0 auto; }
+  .sec.on { display: block; }
+  .section-title { margin: 6px 0 12px; font-size: 20px; line-height: 1.2; }
+  .section-kicker { margin: -4px 0 14px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+  .grid { display: grid; gap: 10px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 14px; }
+  .wide-grid { grid-template-columns: 1fr; }
+  .stat,
+  .card,
+  .drink-card,
+  .phase-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .stat { padding: 13px 14px; min-height: 94px; }
+  .stat-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-value { margin-top: 4px; font-size: 24px; line-height: 1; font-weight: 800; }
+  .stat-note { margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+
+  .card,
+  .drink-card,
+  .phase-card { padding: 15px 16px; margin-bottom: 12px; }
+  .card-title,
+  .drink-title,
+  .phase-title { font-size: 16px; font-weight: 800; line-height: 1.25; }
+  .card-sub,
+  .drink-when,
+  .phase-sub { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+  .tip {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border: 1px solid #eadca3;
+    border-radius: var(--radius);
+    background: var(--gold-soft);
+  }
+  .tip p { color: #6f510c; font-size: 13px; line-height: 1.55; }
+  .warning {
+    background: var(--danger-soft);
+    border-color: #efc5c1;
+  }
+  .warning p { color: var(--danger); }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 21px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    vertical-align: middle;
+  }
+  .bg { background: var(--forest-soft); color: var(--forest); }
+  .bb { background: var(--marine-soft); color: var(--marine); }
+  .ba { background: var(--clay-soft); color: var(--clay); }
+  .bp { background: var(--plum-soft); color: var(--plum); }
+  .br { background: var(--danger-soft); color: var(--danger); }
+
+  .row,
+  .meal-row,
+  .ex-row,
+  .phase-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #eef2ef;
+  }
+  .row:last-child,
+  .meal-row:last-child,
+  .ex-row:last-child,
+  .phase-row:last-child { border-bottom: 0; }
+  .time,
+  .meal-time,
+  .ex-num,
+  .drink-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .name,
+  .meal-name,
+  .ex-name { margin-top: 3px; font-size: 15px; font-weight: 800; line-height: 1.35; }
+  .desc,
+  .meal-ingr,
+  .ex-detail,
+  .meal-macros {
+    margin-top: 5px;
+    color: #4e5854;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .meal-macros { color: var(--muted); }
+
+  .day-tabs {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+  }
+  .day-tabs::-webkit-scrollbar { display: none; }
+  .day-sec { display: none; }
+  .day-sec.on { display: block; }
+
+  .steps {
+    margin-top: 9px;
+    counter-reset: step-counter;
+  }
+  .steps li {
+    list-style: none;
+    position: relative;
+    padding: 3px 0 3px 25px;
+    color: #4e5854;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .steps li::before {
+    counter-increment: step-counter;
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--forest-soft);
+    color: var(--forest);
+    font-size: 10px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 17px;
+  }
+
+  .macro-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .macro {
+    padding: 10px;
+    border-radius: var(--radius);
+    background: #f6f8f5;
+    border: 1px solid #e7ece8;
+  }
+  .macro strong { display: block; font-size: 15px; }
+  .macro span { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.3; }
+
+  .link-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 2px; }
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--marine);
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .shop-cat { margin-bottom: 16px; }
+  .shop-cat-title {
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .shop-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eef2ef;
+    cursor: pointer;
+  }
+  .shop-check {
+    width: 21px;
+    height: 21px;
+    border: 2px solid #bac6c0;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .shop-check.done { background: var(--forest); border-color: var(--forest); }
+  .shop-check.done::after {
+    content: "";
+    display: block;
+    width: 5px;
+    height: 9px;
+    margin: 2px auto 0;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .shop-text { color: var(--ink); font-size: 14px; line-height: 1.35; }
+  .shop-text.done { color: #a1aaa6; text-decoration: line-through; }
+  .reset-btn {
+    width: 100%;
+    min-height: 44px;
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #edf2ee;
+    color: #3f4744;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .ph1 { background: var(--marine-soft); border-color: #cfe1eb; }
+  .ph2 { background: var(--forest-soft); border-color: #cae5d8; }
+  .ph3 { background: var(--plum-soft); border-color: #e0cfe5; }
+
+  .footer {
+    padding: 24px 16px 34px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  @media (min-width: 760px) {
+    .sec { padding: 22px; }
+    .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .wide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card,
+    .drink-card,
+    .phase-card { padding: 18px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>Plano 3 Meses - Luiz Carlos Morais Fehlberg</h1>
+  <p>Atualizado em 17/05/2026 - trabalho Seg-Sab 8:00-17:00 - ginasio Terca a Sabado</p>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="showTab('home', this)">Inicio</button>
+  <button onclick="showTab('schedule', this)">Semana</button>
+  <button onclick="showTab('meals', this)">Refeicoes</button>
+  <button onclick="showTab('drinks', this)">Bebidas</button>
+  <button onclick="showTab('workout', this)">Treino</button>
+  <button onclick="showTab('prep', this)">Prep</button>
+  <button onclick="showTab('shop', this)">Compras</button>
+  <button onclick="showTab('phases', this)">3 Meses</button>
+</div>
+
+<main>
+  <section id="home" class="sec on">
+    <h2 class="section-title">Plano realista para perder gordura e criar cintura em V</h2>
+    <p class="section-kicker">A prioridade dos proximos 3 meses e reduzir gordura total, proteger massa muscular e construir ombros, costas e core. Nao existe perda localizada so na barriga/obliquos/parte interna da coxa, mas cintura e abdomen baixam quando o deficit, proteina, passos e treino ficam consistentes.</p>
+
+    <div class="grid stats">
+      <div class="stat"><div class="stat-label">Idade</div><div class="stat-value">27</div><div class="stat-note">Nascimento: 20/09/1998</div></div>
+      <div class="stat"><div class="stat-label">Altura</div><div class="stat-value">187 cm</div><div class="stat-note">Corrigido</div></div>
+      <div class="stat"><div class="stat-label">Peso atual</div><div class="stat-value">112.4 kg</div><div class="stat-note">Antes: 115 kg</div></div>
+      <div class="stat"><div class="stat-label">IMC</div><div class="stat-value">32.1</div><div class="stat-note">112.4 / 1.87 m</div></div>
+      <div class="stat"><div class="stat-label">Gordura</div><div class="stat-value">29.3%</div><div class="stat-note">Massa gorda aprox. 32.9 kg</div></div>
+      <div class="stat"><div class="stat-label">Musculo</div><div class="stat-value">33.8%</div><div class="stat-note">Aprox. 38.0 kg</div></div>
+      <div class="stat"><div class="stat-label">Abdomen</div><div class="stat-value">107 cm</div><div class="stat-note">Medir 1x/semana</div></div>
+      <div class="stat"><div class="stat-label">BMR</div><div class="stat-value">2188</div><div class="stat-note">kcal/dia em repouso</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Alvos diarios</div>
+      <div class="macro-strip">
+        <div class="macro"><strong>2300-2500</strong><span>kcal/dia. Ajusta pelo peso semanal.</span></div>
+        <div class="macro"><strong>165-180 g</strong><span>proteina/dia para proteger musculo.</span></div>
+        <div class="macro"><strong>2.5-3.2 L</strong><span>agua/dia, incluindo pepino e menta.</span></div>
+      </div>
+      <div class="row">
+        <div class="name">Resultado de 12 semanas</div>
+        <div class="desc">Meta boa: 6-10 kg a menos e abdomen 6-10 cm menor. Abs definidos podem precisar de mais tempo depois destes 3 meses, mas a cintura em V comeca aqui: perder gordura + fortalecer costas/ombros + core.</div>
+      </div>
+      <div class="row">
+        <div class="name">Regras que mandam no plano</div>
+        <div class="desc">Sem arroz como base. Usa massa em porcoes controladas, de preferencia integral/fusilli/penne para saladas. Mantem legumes altos, proteina em todas as refeicoes e bebidas sem calorias como rotina.</div>
+      </div>
+    </div>
+
+    <div class="tip warning">
+      <p>Este plano organiza a tua rotina, mas nao substitui o nutricionista. Se tiveres refluxo, gastrite, problemas renais, medicacao para glicemia/pressao ou dor forte no treino, confirma os detalhes com o profissional que te acompanha.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Medidas da consulta</div>
+      <div class="row"><div class="name">Gordura visceral: 12</div><div class="desc">Objetivo: baixar gradualmente com passos, deficit calorico e treino de forca.</div></div>
+      <div class="row"><div class="name">Braco direito: 34 cm - braco esquerdo: 36 cm</div><div class="desc">Nao forces simetria com carga diferente no inicio. Usa boa tecnica e deixa o lado direito recuperar.</div></div>
+      <div class="row"><div class="name">Peso semanal</div><div class="desc">Pesa-te 1 vez por semana, de manha, depois da casa de banho. O numero do dia varia; a media semanal manda.</div></div>
+    </div>
+  </section>
+
+  <section id="schedule" class="sec">
+    <h2 class="section-title">Semana encaixada no teu trabalho</h2>
+    <p class="section-kicker">O horario assume trabalho das 8:00 as 17:00, de segunda a sabado. De manha alternas bicicleta e caminhada; de terca a sabado tens ginasio depois do trabalho.</p>
+
+    <div class="card">
+      <div class="card-title">Rotina base</div>
+      <div class="meal-row">
+        <div class="meal-time">5:55</div>
+        <div class="meal-name">Acordar</div>
+        <div class="meal-ingr">Levanta, casa de banho, agua. Evita telemovel na cama para nao perderes a janela da manha.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">6:05</div>
+        <div class="meal-name">Agua de limao e gengibre <span class="badge bg">diario</span></div>
+        <div class="meal-ingr">500 ml antes da caminhada. Agua morna, nao a ferver.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">6:15-6:50</div>
+        <div class="meal-name">Bike + caminhada <span class="badge bb">manhas</span></div>
+        <div class="meal-ingr">Segunda: 15 min bicicleta + 20 min caminhada. Terca a sabado: 10 min bicicleta leve + 10-15 min caminhada, so para acordar o corpo. Domingo: livre leve.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">8:00-17:00</div>
+        <div class="meal-name">Trabalho</div>
+        <div class="meal-ingr">Leva almoco de massa fria, 2 snacks e garrafa de pepino/menta ou lima/menta. ACV so diluido antes do almoco.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">Terca 18:15</div>
+        <div class="meal-name">Ginasio - Push + Abs <span class="badge bb">~80-90 min</span></div>
+        <div class="meal-ingr">Peito, ombros, triceps, core e cardio final.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">Quarta 18:15</div>
+        <div class="meal-name">Ginasio - Pull + Bike <span class="badge bp">~75-85 min</span></div>
+        <div class="meal-ingr">Costas, biceps, posterior da coxa e bicicleta moderada.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">Quinta 18:15</div>
+        <div class="meal-name">Ginasio - Legs + Core <span class="badge ba">~80-90 min</span></div>
+        <div class="meal-ingr">Pernas, gluteos, posterior da coxa, core e caminhada inclinada.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">Sexta 18:15</div>
+        <div class="meal-name">Ginasio - Upper + Arms <span class="badge bg">~70-80 min</span></div>
+        <div class="meal-ingr">Ombros, peito/costas leve, biceps, triceps e cardio mais curto.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">Sabado 18:15</div>
+        <div class="meal-name">Ginasio - Full Body Today <span class="badge br">~90 min</span></div>
+        <div class="meal-ingr">Treino completo no formato que gostas: dumbbells, abs, bike, treadmill e farmer carry opcional.</div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">Domingo</div>
+        <div class="meal-name">Prep + descanso ativo</div>
+        <div class="meal-ingr">Prepara frango, massa, legumes, bebidas, pizza controlada se quiseres, e caixas. Caminhada leve opcional 30-45 min.</div>
+      </div>
+    </div>
+
+    <div class="grid wide-grid">
+      <div class="card">
+        <div class="card-title">A que horas dormir</div>
+        <div class="row"><div class="name">Objetivo principal</div><div class="desc">Para acordar as 5:55, tenta luzes apagadas as 22:10. Isto da cerca de 7h45 na cama.</div></div>
+        <div class="row"><div class="name">Rotina de sono</div><div class="desc">21:30 banho/arrumar comida, 21:45 sem ecra forte, 22:00 cama, 22:10 dormir.</div></div>
+        <div class="row"><div class="name">Terca a sabado pos-ginasio</div><div class="desc">Jantar ja pronto. Meta: cama 22:20-22:30 no maximo. Se passa das 23:00, corta cafeina depois das 14:00.</div></div>
+        <div class="row"><div class="name">Minimo aceitavel</div><div class="desc">Adultos devem mirar 7+ horas. Menos do que isso atrapalha fome, recuperacao e treino.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Creatina e whey</div>
+        <div class="row"><div class="name">Creatina monohidratada</div><div class="desc">5 g todos os dias. Melhor horario para ti: pequeno-almoco. Nos dias de ginasio tambem pode ser no jantar pos-treino. O que importa e tomar todos os dias.</div></div>
+        <div class="row"><div class="name">Whey</div><div class="desc">1 scoop com agua/leite quando faltar proteina. Melhor uso: 16:00 no trabalho, ou depois do ginasio se o jantar atrasar.</div></div>
+        <div class="row"><div class="name">Nao precisa complicar</div><div class="desc">Whey nao queima gordura; so ajuda a bater proteina. Creatina pode subir um pouco o peso por agua no musculo, sem ser gordura.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Regra de ajuste</div>
+        <div class="row"><div class="name">Se o peso nao baixa por 2 semanas</div><div class="desc">Corta 150-200 kcal/dia, geralmente reduzindo massa/azeite/frutos secos. Nao cortes proteina.</div></div>
+        <div class="row"><div class="name">Se estiveres sem energia</div><div class="desc">Adiciona 1 banana no pre-treino e dorme mais. Se continuar, fala com o nutricionista.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="meals" class="sec">
+    <h2 class="section-title">Refeicoes da semana</h2>
+    <p class="section-kicker">Pasta salads ao almoco, jantar simples e proteina alta. Usei o estilo Budget Bytes: barato, meal prep, poucos ingredientes, boas sobras e molhos simples. As porcoes de massa ficam em 70-90 g seca por refeicao principal, ou 180-240 g ja cozida.</p>
+
+    <div class="card">
+      <div class="card-title">Ideias Budget Bytes adaptadas</div>
+      <div class="card-sub">Usa estes links como inspiracao e adapta as porcoes ao teu plano.</div>
+      <div class="link-row">
+        <a class="link-btn" href="https://www.budgetbytes.com/greek-chicken-pasta-salad/" target="_blank">Greek chicken pasta salad</a>
+        <a class="link-btn" href="https://www.budgetbytes.com/pasta-salad/" target="_blank">Easy pasta salad</a>
+        <a class="link-btn" href="https://www.budgetbytes.com/garlic-parmesan-kale-pasta-meal-prep/" target="_blank">Kale pasta meal prep</a>
+        <a class="link-btn" href="https://www.budgetbytes.com/baked-chicken-breast/" target="_blank">Baked chicken breast</a>
+        <a class="link-btn" href="https://www.budgetbytes.com/air-fryer-chicken-breast/" target="_blank">Air fryer chicken</a>
+        <a class="link-btn" href="https://www.budgetbytes.com/baked-pizza-chicken/" target="_blank">Pizza chicken</a>
+        <a class="link-btn" href="https://www.budgetbytes.com/knead-pan-pizza/" target="_blank">Pan pizza</a>
+      </div>
+      <div class="row"><div class="name">Regra da pizza</div><div class="desc">Pizza entra 1x/semana, mas como refeicao planeada: pizza chicken com salada, tortilla pizza, ou 2 fatias de pan pizza + salada grande. Nao e dia livre.</div></div>
+    </div>
+
+    <div class="day-tabs">
+      <button class="day-tab active" onclick="showDay('meal-mon', this)">Seg</button>
+      <button class="day-tab" onclick="showDay('meal-tue', this)">Ter</button>
+      <button class="day-tab" onclick="showDay('meal-wed', this)">Qua</button>
+      <button class="day-tab" onclick="showDay('meal-thu', this)">Qui</button>
+      <button class="day-tab" onclick="showDay('meal-fri', this)">Sex</button>
+      <button class="day-tab" onclick="showDay('meal-sat', this)">Sab</button>
+      <button class="day-tab" onclick="showDay('meal-sun', this)">Dom</button>
+    </div>
+
+    <div id="meal-mon" class="day-sec on">
+      <div class="card">
+        <div class="card-title">Segunda - inicio limpo</div>
+        <div class="meal-row"><div class="meal-time">6:05</div><div class="meal-name">Agua limao + gengibre</div><div class="meal-ingr">1/2 limao, 1 col cha gengibre ralado, 500 ml agua morna.</div></div>
+        <div class="meal-row"><div class="meal-time">7:10</div><div class="meal-name">Aveia proteica fria</div><div class="meal-ingr">60 g aveia + 200 g iogurte grego + 1 maca em cubos + canela. Whey opcional com agua.</div><div class="meal-macros">~40-55 g proteina - ~480-590 kcal</div></div>
+        <div class="meal-row"><div class="meal-time">10:30</div><div class="meal-name">Banana + amendoins</div><div class="meal-ingr">1 banana + 20 g amendoins. Se a fome estiver alta, junta 1 ovo cozido.</div></div>
+        <div class="meal-row"><div class="meal-time">12:30</div><div class="meal-name">Shot ACV diluido</div><div class="meal-ingr">1 col sopa vinagre de maca + 200 ml agua + canela. Palhinha e lavar boca com agua.</div></div>
+        <div class="meal-row"><div class="meal-time">13:00</div><div class="meal-name">Salada de massa tipo Greek chicken</div><div class="meal-ingr">80 g massa seca cozida + 170 g peito de frango + pepino + tomate + espinafres + menta + limao + 1 col cha azeite. Inspirada na salada grega do Budget Bytes, mas mais leve.</div><div class="meal-macros">~55 g proteina - ~620 kcal</div></div>
+        <div class="meal-row"><div class="meal-time">16:00</div><div class="meal-name">Iogurte grego + canela</div><div class="meal-ingr">1 dose iogurte grego. Se precisares, junta frutos vermelhos.</div></div>
+        <div class="meal-row"><div class="meal-time">19:15</div><div class="meal-name">Peru em tomate + massa pequena</div><div class="meal-ingr">180-200 g peru em cubos ou picado + molho tomate caseiro + legumes + 60 g massa seca cozida.</div></div>
+      </div>
+    </div>
+
+    <div id="meal-tue" class="day-sec">
+      <div class="card">
+        <div class="card-title">Terca - ginasio Push + Abs</div>
+        <div class="meal-row"><div class="meal-time">6:05</div><div class="meal-name">Agua limao + gengibre</div><div class="meal-ingr">Mesmo ritual. Depois: 10 min bicicleta leve + 10-15 min caminhada.</div></div>
+        <div class="meal-row"><div class="meal-time">7:10</div><div class="meal-name">Ovos + pao + tomate</div><div class="meal-ingr">3 ovos + 2 fatias pao + tomate/espinafres. Azeite so 1 col cha se precisares.</div></div>
+        <div class="meal-row"><div class="meal-time">10:30</div><div class="meal-name">Maca + queijo/iogurte</div><div class="meal-ingr">1 maca + iogurte grego ou 2 fatias queijo flamengo se for o que tens em casa.</div></div>
+        <div class="meal-row"><div class="meal-time">13:00</div><div class="meal-name">Salada de massa, atum e grao</div><div class="meal-ingr">75 g massa seca cozida + 1 lata atum escorrido + 100 g grao + pepino + cebola roxa + limao + salsa/menta.</div><div class="meal-macros">~45 g proteina - ~650 kcal</div></div>
+        <div class="meal-row"><div class="meal-time">17:15</div><div class="meal-name">Pre-treino simples</div><div class="meal-ingr">1 banana ou 1 fatia pao com iogurte/queijo. Agua. Evita cafeina tarde se atrapalhar o sono.</div></div>
+        <div class="meal-row"><div class="meal-time">18:15</div><div class="meal-name">Ginasio - Push + Abs</div><div class="meal-ingr">Peito, ombros, triceps, abs e cardio final.</div></div>
+        <div class="meal-row"><div class="meal-time">20:00</div><div class="meal-name">Jantar pos-treino: frango tomate-paprika</div><div class="meal-ingr">200 g frango freezer + legumes salteados + 60-70 g massa seca cozida. Mantem molho leve.</div></div>
+      </div>
+    </div>
+
+    <div id="meal-wed" class="day-sec">
+      <div class="card">
+        <div class="card-title">Quarta - ginasio Pull + Bike</div>
+        <div class="meal-row"><div class="meal-time">6:05</div><div class="meal-name">Agua limao + gengibre</div><div class="meal-ingr">Diario. Depois: 10 min bicicleta leve + 10-15 min caminhada.</div></div>
+        <div class="meal-row"><div class="meal-time">7:10</div><div class="meal-name">Batido detox verde + ovos cozidos</div><div class="meal-ingr">Batido verde + 2 ovos cozidos + 1 fatia pao. O batido sozinho nao chega como pequeno-almoco.</div></div>
+        <div class="meal-row"><div class="meal-time">10:30</div><div class="meal-name">Iogurte + frutos vermelhos</div><div class="meal-ingr">200 g iogurte grego + canela.</div></div>
+        <div class="meal-row"><div class="meal-time">13:00</div><div class="meal-name">Salada de massa mediterranica com frango</div><div class="meal-ingr">80 g massa seca cozida + 170 g frango limao-alho + tomate + pepino + folhas verdes + 1 col cha azeite.</div></div>
+        <div class="meal-row"><div class="meal-time">16:00</div><div class="meal-name">Maca + whey</div><div class="meal-ingr">1 maca + 1 scoop whey em agua se a proteina do dia estiver baixa.</div></div>
+        <div class="meal-row"><div class="meal-time">17:15</div><div class="meal-name">Pre-treino simples</div><div class="meal-ingr">Banana ou 1 fatia pao. Agua.</div></div>
+        <div class="meal-row"><div class="meal-time">18:15</div><div class="meal-name">Ginasio - Pull + Bike</div><div class="meal-ingr">Costas, biceps, posterior da coxa e bike.</div></div>
+        <div class="meal-row"><div class="meal-time">20:00</div><div class="meal-name">Sopa de lentilhas + sardinhas</div><div class="meal-ingr">Sopa grossa de lentilhas + 1 lata sardinhas escorrida + salada. Se precisares pos-treino, junta 50 g massa seca cozida.</div></div>
+      </div>
+    </div>
+
+    <div id="meal-thu" class="day-sec">
+      <div class="card">
+        <div class="card-title">Quinta - ginasio Legs + Core</div>
+        <div class="meal-row"><div class="meal-time">6:05</div><div class="meal-name">Agua limao + gengibre</div><div class="meal-ingr">Diario. Depois: 10 min bicicleta leve + 10-15 min caminhada.</div></div>
+        <div class="meal-row"><div class="meal-time">7:10</div><div class="meal-name">Tigela iogurte + aveia</div><div class="meal-ingr">250 g iogurte grego + 50 g aveia + banana pequena + canela.</div></div>
+        <div class="meal-row"><div class="meal-time">10:30</div><div class="meal-name">Ovo cozido + fruta</div><div class="meal-ingr">1-2 ovos cozidos + 1 maca.</div></div>
+        <div class="meal-row"><div class="meal-time">13:00</div><div class="meal-name">Salada de massa com peru e tomate</div><div class="meal-ingr">75 g massa seca cozida + 180 g peru + molho tomate frio/quente + pepino + espinafres.</div></div>
+        <div class="meal-row"><div class="meal-time">16:00</div><div class="meal-name">Whey em agua ou iogurte</div><div class="meal-ingr">Opcional. Usa se a proteina do dia estiver baixa.</div></div>
+        <div class="meal-row"><div class="meal-time">17:15</div><div class="meal-name">Pre-treino</div><div class="meal-ingr">Banana ou pao. Perna precisa de energia.</div></div>
+        <div class="meal-row"><div class="meal-time">18:15</div><div class="meal-name">Ginasio - Legs + Core</div><div class="meal-ingr">Pernas, gluteos, posterior, abs e caminhada inclinada.</div></div>
+        <div class="meal-row"><div class="meal-time">20:00</div><div class="meal-name">Frango soy-gengibre + legumes</div><div class="meal-ingr">200 g frango freezer + brocolo/pimentos/courgette + 60-70 g massa seca cozida.</div></div>
+      </div>
+    </div>
+
+    <div id="meal-fri" class="day-sec">
+      <div class="card">
+        <div class="card-title">Sexta - ginasio Upper + Arms</div>
+        <div class="meal-row"><div class="meal-time">6:05</div><div class="meal-name">Agua limao + gengibre</div><div class="meal-ingr">Diario. Depois: 10 min bicicleta leve + 10-15 min caminhada.</div></div>
+        <div class="meal-row"><div class="meal-time">7:10</div><div class="meal-name">Batido detox verde + aveia proteica</div><div class="meal-ingr">Batido verde + 50 g aveia com iogurte/whey. Nao deixes a manha so em liquidos.</div></div>
+        <div class="meal-row"><div class="meal-time">10:30</div><div class="meal-name">Banana + iogurte</div><div class="meal-ingr">Boa opcao antes de um dia longo.</div></div>
+        <div class="meal-row"><div class="meal-time">13:00</div><div class="meal-name">Salada de massa com sardinha</div><div class="meal-ingr">70 g massa seca cozida + sardinhas escorridas + tomate + pepino + cebola + limao + folhas verdes.</div></div>
+        <div class="meal-row"><div class="meal-time">16:00</div><div class="meal-name">Maca + amendoins</div><div class="meal-ingr">Porcao pequena para nao passar calorias sem reparar.</div></div>
+        <div class="meal-row"><div class="meal-time">17:15</div><div class="meal-name">Pre-treino</div><div class="meal-ingr">Banana ou iogurte. Sexta e mais leve, nao precisas comer pesado.</div></div>
+        <div class="meal-row"><div class="meal-time">18:15</div><div class="meal-name">Ginasio - Upper + Arms</div><div class="meal-ingr">Ombros, peito/costas leve, biceps, triceps e cardio curto.</div></div>
+        <div class="meal-row"><div class="meal-time">20:00</div><div class="meal-name">Pizza chicken + salada grande</div><div class="meal-ingr">Peito de frango no forno com molho de tomate/pizza, queijo controlado e oregano. Serve com salada grande. Se quiseres massa, so 50 g seca cozida.</div></div>
+      </div>
+    </div>
+
+    <div id="meal-sat" class="day-sec">
+      <div class="card">
+        <div class="card-title">Sabado - ginasio Full Body Today</div>
+        <div class="meal-row"><div class="meal-time">6:05</div><div class="meal-name">Agua limao + gengibre</div><div class="meal-ingr">Diario. 10 min bicicleta leve + 10 min caminhada; se estiveres cansado, faz so caminhada leve.</div></div>
+        <div class="meal-row"><div class="meal-time">7:10</div><div class="meal-name">Ovos + pao + fruta</div><div class="meal-ingr">3 ovos + 1-2 fatias pao + 1 fruta.</div></div>
+        <div class="meal-row"><div class="meal-time">10:30</div><div class="meal-name">Iogurte grego + canela</div><div class="meal-ingr">Simples e facil de levar.</div></div>
+        <div class="meal-row"><div class="meal-time">13:00</div><div class="meal-name">Salada de massa com frango e grao</div><div class="meal-ingr">80 g massa seca cozida + 150 g frango + 80 g grao + pepino + tomate + menta + limao.</div></div>
+        <div class="meal-row"><div class="meal-time">17:15</div><div class="meal-name">Pre-treino</div><div class="meal-ingr">Banana ou pao. Agua. Nada pesado.</div></div>
+        <div class="meal-row"><div class="meal-time">18:15</div><div class="meal-name">Ginasio - Full Body Today</div><div class="meal-ingr">Treino no formato completo que pediste.</div></div>
+        <div class="meal-row"><div class="meal-time">20:00</div><div class="meal-name">Jantar pos-treino: frango limao-alho</div><div class="meal-ingr">200 g frango + legumes + 60-70 g massa seca cozida ou batata se quiseres variar.</div></div>
+      </div>
+    </div>
+
+    <div id="meal-sun" class="day-sec">
+      <div class="card">
+        <div class="card-title">Domingo - reset e prep</div>
+        <div class="meal-row"><div class="meal-time">Manha</div><div class="meal-name">Batido detox verde</div><div class="meal-ingr">Terceira dose da semana. Depois come proteina: ovos, iogurte ou frango.</div></div>
+        <div class="meal-row"><div class="meal-time">Almoco</div><div class="meal-name">Refeicao flexivel controlada</div><div class="meal-ingr">Opcao pizza: tortilla pizza ou 2 fatias de pan pizza + salada grande + frango/atum. Opcao normal: 1/2 legumes, 1/4 proteina, 1/4 massa/batata/leguminosas.</div></div>
+        <div class="meal-row"><div class="meal-time">Tarde</div><div class="meal-name">Prep da semana</div><div class="meal-ingr">Cozinha frango, massa e legumes. Congela porcoes de frango. Prepara agua pepino/menta.</div></div>
+        <div class="meal-row"><div class="meal-time">Noite</div><div class="meal-name">Jantar leve</div><div class="meal-ingr">Sopa + ovos/sardinhas/atum ou frango. Dorme cedo para a segunda nao comecar em divida.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="drinks" class="sec">
+    <h2 class="section-title">Bebidas de volta ao plano</h2>
+    <p class="section-kicker">Mantive o ritual que gostas, com linguagem mais segura: estas bebidas ajudam por hidratacao, rotina, saciedade e por substituirem bebidas caloricas. O corpo ja faz "detox" pelo figado e rins.</p>
+
+    <div class="drink-card">
+      <div class="drink-title">Agua de limao e gengibre</div>
+      <div class="drink-when">Todos os dias de manha em jejum, antes da caminhada - 0 kcal</div>
+      <div class="drink-label">Ingredientes</div>
+      <div class="meal-ingr">1/2 limao espremido - 1 col cha gengibre fresco ralado - 500 ml agua morna (nao a ferver)</div>
+      <div class="drink-label">Preparacao</div>
+      <ol class="steps">
+        <li>Usa agua morna. Se ferver, deixa arrefecer antes do limao.</li>
+        <li>Espreme o limao diretamente.</li>
+        <li>Rala o gengibre para dentro.</li>
+        <li>Mexe e bebe antes de sair para caminhar.</li>
+      </ol>
+      <div class="drink-label">Porque usar</div>
+      <div class="meal-ingr">Ajuda a comecar o dia hidratado, sem calorias e com um ritual fixo antes da caminhada. O gengibre tambem pode ajudar a sensacao de conforto digestivo.</div>
+    </div>
+
+    <div class="drink-card">
+      <div class="drink-title">Batido detox verde</div>
+      <div class="drink-when">3x por semana: Quarta, Sexta e Domingo - cerca de 80 kcal</div>
+      <div class="drink-label">Ingredientes</div>
+      <div class="meal-ingr">1 punhado espinafres frescos - 1/2 pepino em cubos - 1 maca verde sem sementes - sumo 1/2 limao - 1 cm gengibre fresco - 250 ml agua fria - gelo opcional</div>
+      <div class="drink-label">Preparacao</div>
+      <ol class="steps">
+        <li>Coloca primeiro a agua no liquidificador para proteger a lamina.</li>
+        <li>Junta espinafres, pepino, maca e gengibre.</li>
+        <li>Bate 60-90 segundos na velocidade maxima.</li>
+        <li>Adiciona sumo de limao e bate mais 10 segundos.</li>
+        <li>Se ficar amargo, adiciona mais 1/2 maca. Bebe imediatamente.</li>
+      </ol>
+      <div class="drink-label">Porque usar</div>
+      <div class="meal-ingr">Da volume, micronutrientes e frescura com poucas calorias. Nao substitui proteina no pequeno-almoco.</div>
+    </div>
+
+    <div class="drink-card">
+      <div class="drink-title">Shot de vinagre de maca (ACV)</div>
+      <div class="drink-when">Todos os dias, 15-30 min antes do almoco - cerca de 5 kcal</div>
+      <div class="drink-label">Ingredientes</div>
+      <div class="meal-ingr">1 col sopa ACV cru nao filtrado (com "a mae") - 200 ml agua - pitada canela - 1/2 col cha mel opcional</div>
+      <div class="drink-label">Preparacao</div>
+      <ol class="steps">
+        <li>Coloca primeiro a agua no copo.</li>
+        <li>Adiciona 1 col sopa ACV. So aumenta para 2 se tolerares bem.</li>
+        <li>Junta canela e mel, mexe.</li>
+        <li>Bebe com palhinha para proteger os dentes.</li>
+        <li>Passa a boca com agua simples depois.</li>
+      </ol>
+      <div class="drink-label">Importante</div>
+      <div class="meal-ingr">Nunca bebas vinagre puro. Se tiveres refluxo, dor de estomago ou medicacao que afete glicemia/potassio, confirma com nutricionista/medico.</div>
+    </div>
+
+    <div class="drink-card">
+      <div class="drink-title">Agua com pepino e menta</div>
+      <div class="drink-when">O dia todo, todos os dias - 0 kcal - prepara na noite anterior</div>
+      <div class="drink-label">Ingredientes</div>
+      <div class="meal-ingr">1/2 pepino fatiado fino - 10-12 folhas menta fresca - 1 L agua fria - 1/2 limao fatiado opcional</div>
+      <div class="drink-label">Preparacao</div>
+      <ol class="steps">
+        <li>Corta o pepino fino. Nao e preciso descascar.</li>
+        <li>Esmaga as folhas de menta nas palmas das maos para libertar os oleos.</li>
+        <li>Coloca pepino e menta numa garrafa de 1 L.</li>
+        <li>Enche de agua fria e fecha.</li>
+        <li>Frigorifico durante a noite, minimo 4 horas.</li>
+        <li>Bebe ao longo do dia. Podes encher uma vez. Dura ate 2 dias.</li>
+      </ol>
+      <div class="drink-label">Porque usar</div>
+      <div class="meal-ingr">Substitui sumos e bebidas acucaradas, facilita beber agua e reduz vontade de beliscar. Prepara uma garrafa ao domingo e outra na quinta.</div>
+    </div>
+
+    <div class="drink-card">
+      <div class="drink-title">Agua lima + menta</div>
+      <div class="drink-when">Opcao para alternar com pepino/menta - 0 kcal</div>
+      <div class="drink-label">Ingredientes</div>
+      <div class="meal-ingr">1/2 lima fatiada - 10 folhas menta fresca - 1 L agua fria - gelo opcional</div>
+      <div class="drink-label">Preparacao</div>
+      <ol class="steps">
+        <li>Fatia a lima fina.</li>
+        <li>Esmaga a menta nas palmas das maos.</li>
+        <li>Coloca tudo numa garrafa de 1 L com agua fria.</li>
+        <li>Frigorifico por 2-4 horas ou durante a noite.</li>
+        <li>Alterna: segunda/quarta/sexta pepino+menta; terca/quinta/sabado lima+menta.</li>
+      </ol>
+      <div class="drink-label">Quando usar</div>
+      <div class="meal-ingr">Boa nos dias de ginasio porque e fresca e facil de beber durante o trabalho. Se a acidez incomodar, usa menos lima.</div>
+    </div>
+
+    <div class="drink-card">
+      <div class="drink-title">Agua morango + lima + menta</div>
+      <div class="drink-when">Opcao mais doce para alternar - 0 kcal - prepara 2 a 4 horas antes</div>
+      <div class="drink-label">Ingredientes</div>
+      <div class="meal-ingr">5-6 morangos fatiados - 1/2 lima fatiada - 8-10 folhas menta fresca - 1 L agua fria - gelo opcional</div>
+      <div class="drink-label">Preparacao</div>
+      <ol class="steps">
+        <li>Lava os morangos e fatia fino.</li>
+        <li>Fatia a lima fina.</li>
+        <li>Esmaga a menta nas palmas das maos.</li>
+        <li>Junta tudo numa garrafa de 1 L com agua fria.</li>
+        <li>Frigorifico 2-4 horas antes de beber.</li>
+      </ol>
+      <div class="drink-label">Quando usar</div>
+      <div class="meal-ingr">Boa ao domingo ou quando quiseres algo mais doce sem acucar. Se os morangos estiverem muito maduros, usa menos quantidade.</div>
+    </div>
+
+    <div class="drink-card">
+      <div class="drink-title">Variedade sem sair do plano</div>
+      <div class="drink-when">Alterna quando estiveres farto do mesmo sabor</div>
+      <div class="meal-row"><div class="meal-name">Cha verde frio com limao</div><div class="meal-ingr">Faz o cha, arrefece e leva para o trabalho. Evita depois das 15:00.</div></div>
+      <div class="meal-row"><div class="meal-name">Agua gengibre + pepino</div><div class="meal-ingr">Boa para alternar com o limao quando a acidez incomoda.</div></div>
+    </div>
+  </section>
+
+  <section id="workout" class="sec">
+    <h2 class="section-title">Plano de treino - Terca a Sabado</h2>
+    <p class="section-kicker">Cinco dias de ginasio, com estrutura fixa e facil de seguir. Treina forte, mas deixa 1-2 repeticoes na reserva na maior parte dos sets. Se uma dor for articular/aguda, para e troca o exercicio.</p>
+
+    <div class="link-row">
+      <a class="link-btn" href="https://musclewiki.com/exercise/dumbbell-goblet-squat?model=m" target="_blank">Goblet squat</a>
+      <a class="link-btn" href="https://musclewiki.com/exercise/dumbbell-bench-press?model=m" target="_blank">DB bench press</a>
+      <a class="link-btn" href="https://musclewiki.com/exercise/dumbbell-row-unilateral?model=m" target="_blank">DB row</a>
+      <a class="link-btn" href="https://musclewiki.com/exercise/dumbbell-romanian-deadlift?model=m" target="_blank">DB Romanian deadlift</a>
+      <a class="link-btn" href="https://musclewiki.com/exercise/dumbbell-seated-overhead-press?model=m" target="_blank">DB shoulder press</a>
+      <a class="link-btn" href="https://musclewiki.com/exercise/dumbbell-seated-overhead-tricep-extension?model=m" target="_blank">Tricep extension</a>
+    </div>
+
+    <div class="tip">
+      <p>Horario sugerido: 18:15 no ginasio, acabar entre 19:35 e 19:50, jantar pronto em casa e cama 22:10-22:30. Se a semana pesar muito, corta primeiro o cardio final, nao o treino de forca.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gym Workout - Terca</div>
+      <div class="card-sub">Push + Abs - peito, ombros, triceps - total 80-90 min</div>
+      <div class="ex-row"><div class="ex-num">Warm-Up - 10 min</div><div class="ex-name">Treadmill</div><div class="ex-detail">5 min fast walk. Incline: 5-8%. Speed: comfortable pace.</div></div>
+      <div class="ex-row"><div class="ex-num">Mobility - 5 min</div><div class="ex-name">Shoulders + hips</div><div class="ex-detail">Arm circles x 20, torso twists x 20, bodyweight squats x 15, hip rotations x 10 each side.</div></div>
+      <div class="ex-row"><div class="ex-num">Dumbbell Workout - 45 min</div><div class="ex-name">1. Goblet Squat</div><div class="ex-detail">4 sets x 12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">2</div><div class="ex-name">Dumbbell Bench Press</div><div class="ex-detail">4 sets x 10-12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">3</div><div class="ex-name">Incline Dumbbell Press</div><div class="ex-detail">3 sets x 10 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">4</div><div class="ex-name">Dumbbell Shoulder Press</div><div class="ex-detail">3 sets x 10 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">5</div><div class="ex-name">Dumbbell Lateral Raises</div><div class="ex-detail">3 sets x 15 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">6</div><div class="ex-name">Overhead Dumbbell Tricep Extension</div><div class="ex-detail">3 sets x 12 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">Abs Circuit - 15 min</div><div class="ex-name">Repeat 3 rounds</div><div class="ex-detail">Leg raises 15 reps, Russian twists 20 reps, mountain climbers 30 sec, plank 45 sec. Rest: 60 sec between rounds.</div></div>
+      <div class="ex-row"><div class="ex-num">Cardio Finish - 15-20 min</div><div class="ex-name">Bike + treadmill</div><div class="ex-detail">Bike 8-10 min moderate pace. Treadmill incline walk 8-10 min, incline 8-12%, speed 5-6 km/h.</div></div>
+      <div class="ex-row"><div class="ex-num">Total Workout Time</div><div class="ex-name">~80-90 min</div><div class="ex-detail">Warm-up 10 min, weights 45 min, abs 15 min, cardio 15-20 min.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gym Workout - Quarta</div>
+      <div class="card-sub">Pull + Bike - costas, biceps, posterior - total 75-85 min</div>
+      <div class="ex-row"><div class="ex-num">Warm-Up - 10 min</div><div class="ex-name">Bike</div><div class="ex-detail">5 min easy/moderate pace + 5 min shoulder/back mobility.</div></div>
+      <div class="ex-row"><div class="ex-num">Mobility - 5 min</div><div class="ex-name">Back + hips</div><div class="ex-detail">Band pull-aparts or face-pull light x 20, torso twists x 20, hip hinges x 15, cat-cow x 8.</div></div>
+      <div class="ex-row"><div class="ex-num">Strength Workout - 45 min</div><div class="ex-name">1. One-Arm Dumbbell Row</div><div class="ex-detail">4 sets x 12 reps each arm. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">2</div><div class="ex-name">Lat Pulldown or Assisted Pull-Up</div><div class="ex-detail">4 sets x 10-12 reps. Rest: 75 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">3</div><div class="ex-name">Seated Cable Row</div><div class="ex-detail">3 sets x 12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">4</div><div class="ex-name">Dumbbell Romanian Deadlift</div><div class="ex-detail">4 sets x 12 reps. Rest: 60-90 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">5</div><div class="ex-name">Hammer Curls</div><div class="ex-detail">3 sets x 12 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">6</div><div class="ex-name">Dumbbell Bicep Curls</div><div class="ex-detail">3 sets x 12 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">Core - 10 min</div><div class="ex-name">Repeat 2 rounds</div><div class="ex-detail">Dead bug 12 each side, side plank 30 sec each side, bird dog 12 each side.</div></div>
+      <div class="ex-row"><div class="ex-num">Cardio Finish - 20 min</div><div class="ex-name">Bike</div><div class="ex-detail">20 min moderate pace. You should breathe faster but still control it.</div></div>
+      <div class="ex-row"><div class="ex-num">Total Workout Time</div><div class="ex-name">~75-85 min</div><div class="ex-detail">Warm-up 10 min, weights 45 min, core 10 min, bike 20 min.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gym Workout - Quinta</div>
+      <div class="card-sub">Legs + Core - pernas, gluteos, posterior - total 80-90 min</div>
+      <div class="ex-row"><div class="ex-num">Warm-Up - 10 min</div><div class="ex-name">Bike</div><div class="ex-detail">5 min easy pace. Then leg mobility 5 min: ankles, hips, bodyweight squats.</div></div>
+      <div class="ex-row"><div class="ex-num">Mobility - 5 min</div><div class="ex-name">Lower body</div><div class="ex-detail">Bodyweight squats x 15, hip rotations x 10 each side, lunges x 8 each side, hamstring hinge x 12.</div></div>
+      <div class="ex-row"><div class="ex-num">Leg Workout - 50 min</div><div class="ex-name">1. Leg Press</div><div class="ex-detail">4 sets x 12 reps. Rest: 75-90 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">2</div><div class="ex-name">Goblet Squat</div><div class="ex-detail">4 sets x 12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">3</div><div class="ex-name">Dumbbell Walking Lunges</div><div class="ex-detail">3 sets x 10 reps each leg. Rest: 75 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">4</div><div class="ex-name">Dumbbell Romanian Deadlift</div><div class="ex-detail">4 sets x 10-12 reps. Rest: 75-90 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">5</div><div class="ex-name">Hip Thrust or Glute Bridge</div><div class="ex-detail">4 sets x 10-12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">6</div><div class="ex-name">Calf Raises</div><div class="ex-detail">4 sets x 15 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">Abs Circuit - 12-15 min</div><div class="ex-name">Repeat 3 rounds</div><div class="ex-detail">Reverse crunch 15 reps, plank 45 sec, mountain climbers 30 sec. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">Cardio Finish - 10-15 min</div><div class="ex-name">Treadmill Incline Walk</div><div class="ex-detail">Incline 8-10%, speed 4.8-5.6 km/h. Keep it controlled after legs.</div></div>
+      <div class="ex-row"><div class="ex-num">Total Workout Time</div><div class="ex-name">~80-90 min</div><div class="ex-detail">Warm-up 10 min, legs 50 min, abs 12-15 min, cardio 10-15 min.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gym Workout - Sexta</div>
+      <div class="card-sub">Upper + Arms - ombros, peito/costas leve, bracos - total 70-80 min</div>
+      <div class="ex-row"><div class="ex-num">Warm-Up - 10 min</div><div class="ex-name">Treadmill</div><div class="ex-detail">5 min fast walk. Incline: 5-8%. Then 5 min shoulder mobility.</div></div>
+      <div class="ex-row"><div class="ex-num">Mobility - 5 min</div><div class="ex-name">Shoulders + trunk</div><div class="ex-detail">Arm circles x 20, torso twists x 20, light lateral raises x 15, scapular squeezes x 15.</div></div>
+      <div class="ex-row"><div class="ex-num">Upper Workout - 45 min</div><div class="ex-name">1. Dumbbell Shoulder Press</div><div class="ex-detail">4 sets x 10 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">2</div><div class="ex-name">Dumbbell Bench Press</div><div class="ex-detail">3 sets x 10-12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">3</div><div class="ex-name">One-Arm Dumbbell Row</div><div class="ex-detail">3 sets x 12 reps each arm. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">4</div><div class="ex-name">Dumbbell Lateral Raises</div><div class="ex-detail">4 sets x 15 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">5</div><div class="ex-name">Hammer Curls</div><div class="ex-detail">3 sets x 12 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">6</div><div class="ex-name">Overhead Dumbbell Tricep Extension</div><div class="ex-detail">3 sets x 12 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">7</div><div class="ex-name">Face Pull or Rear Delt Fly</div><div class="ex-detail">3 sets x 15 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">Abs - 10 min</div><div class="ex-name">Repeat 2 rounds</div><div class="ex-detail">Russian twists 20 reps, leg raises 12 reps, plank 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">Cardio Finish - 10 min</div><div class="ex-name">Bike or incline walk</div><div class="ex-detail">Easy/moderate. Save energy for Saturday.</div></div>
+      <div class="ex-row"><div class="ex-num">Total Workout Time</div><div class="ex-name">~70-80 min</div><div class="ex-detail">Warm-up 10 min, weights 45 min, abs 10 min, cardio 10 min.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gym Workout - Sabado</div>
+      <div class="card-sub">Full Body Today - formato completo - total ~90 min</div>
+      <div class="ex-row"><div class="ex-num">Warm-Up - 10 min</div><div class="ex-name">Treadmill</div><div class="ex-detail">5 min fast walk. Incline: 5-8%. Speed: comfortable pace.</div></div>
+      <div class="ex-row"><div class="ex-num">Mobility - 5 min</div><div class="ex-name">Full body</div><div class="ex-detail">Arm circles x 20, torso twists x 20, bodyweight squats x 15, hip rotations x 10 each side.</div></div>
+      <div class="ex-row"><div class="ex-num">Dumbbell Workout - 45 min</div><div class="ex-name">1. Goblet Squat</div><div class="ex-detail">4 sets x 12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">2</div><div class="ex-name">Dumbbell Bench Press</div><div class="ex-detail">4 sets x 10-12 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">3</div><div class="ex-name">One-Arm Dumbbell Row</div><div class="ex-detail">4 sets x 12 reps each arm. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">4</div><div class="ex-name">Dumbbell Romanian Deadlift</div><div class="ex-detail">4 sets x 12 reps. Rest: 60-90 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">5</div><div class="ex-name">Dumbbell Shoulder Press</div><div class="ex-detail">3 sets x 10 reps. Rest: 60 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">6</div><div class="ex-name">Hammer Curls</div><div class="ex-detail">3 sets x 12 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">7</div><div class="ex-name">Overhead Dumbbell Tricep Extension</div><div class="ex-detail">3 sets x 12 reps. Rest: 45 sec.</div></div>
+      <div class="ex-row"><div class="ex-num">Abs Circuit - 15 min</div><div class="ex-name">Repeat 3 rounds</div><div class="ex-detail">Leg raises 15 reps, Russian twists 20 reps, mountain climbers 30 sec, plank 45 sec. Rest: 60 sec between rounds.</div></div>
+      <div class="ex-row"><div class="ex-num">Cardio Finish - 20 min</div><div class="ex-name">Bike + Treadmill Incline Walk</div><div class="ex-detail">Bike 10 min moderate pace. Treadmill 10 min, incline 8-12%, speed 5-6 km/h.</div></div>
+      <div class="ex-row"><div class="ex-num">Optional Finisher</div><div class="ex-name">Farmer Carry</div><div class="ex-detail">3 rounds, 30-40 sec walk with heavy dumbbells.</div></div>
+      <div class="ex-row"><div class="ex-num">Total Workout Time</div><div class="ex-name">~90 min</div><div class="ex-detail">Warm-up 10 min, weights 45 min, abs 15 min, cardio 20 min.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Progressao e recuperacao</div>
+      <div class="phase-row"><strong>Semanas 1-2</strong> - aprende tecnica, usa cargas moderadas e nao falhes reps.</div>
+      <div class="phase-row"><strong>Semanas 3-4</strong> - tenta subir 1-2 reps por exercicio antes de subir peso.</div>
+      <div class="phase-row"><strong>Semanas 5-8</strong> - quando fizeres o topo das reps com boa forma, sobe ligeiramente a carga.</div>
+      <div class="phase-row"><strong>Semanas 9-12</strong> - mantem a carga, melhora descanso/cardio e qualidade das reps.</div>
+      <div class="phase-row"><strong>Se estiveres destruido</strong> - faz sexta mais leve: corta 1 set por exercicio e cardio final.</div>
+    </div>
+  </section>
+
+  <section id="prep" class="sec">
+    <h2 class="section-title">Prep: massa, frango e caixas</h2>
+    <p class="section-kicker">O objetivo e chegar ao trabalho com comida pronta. Pasta salad funciona muito bem fria, mas a porcao manda no deficit.</p>
+
+    <div class="card">
+      <div class="card-title">Domingo - base da semana</div>
+      <div class="meal-row"><div class="meal-name">Massa para saladas</div><div class="meal-ingr">Cozinha 500-600 g massa seca integral/fusilli/penne. Arrefece, mistura so 1-2 col cha azeite no total para nao colar. Divide em caixas.</div></div>
+      <div class="meal-row"><div class="meal-name">Legumes frios</div><div class="meal-ingr">Corta pepino, tomate, cebola roxa, pimentos e folhas. Guarda separado para nao murchar.</div></div>
+      <div class="meal-row"><div class="meal-name">Molho leve</div><div class="meal-ingr">Limao + iogurte grego + menta + pimenta + pitada sal. Leva separado e mistura na hora.</div></div>
+      <div class="meal-row"><div class="meal-name">Ovos cozidos</div><div class="meal-ingr">6 ovos, 10 min. Guarda no frigorifico.</div></div>
+      <div class="meal-row"><div class="meal-name">Aguas aromatizadas</div><div class="meal-ingr">Prepara pepino+menta e lima+menta. Leva 1 L para o trabalho e alterna os sabores.</div></div>
+      <div class="meal-row"><div class="meal-name">Pizza controlada</div><div class="meal-ingr">Deixa molho de tomate/pizza pronto. Para pizza chicken: frango + molho + pouco queijo. Para tortilla pizza: 1 wrap/tortilha + molho + queijo controlado + frango/atum + salada ao lado.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Chicken prep para congelar</div>
+      <div class="card-sub">Faz 8 porcoes de 180-220 g. Congela em sacos/caixas com etiqueta e data.</div>
+      <div class="meal-row"><div class="meal-name">1. Limo-alho-ervas</div><div class="meal-ingr">Frango + sumo limao + alho + pimenta + ervas italianas + 1 col cha azeite por porcao.</div></div>
+      <div class="meal-row"><div class="meal-name">2. Tomate-paprika</div><div class="meal-ingr">Frango cozinhado em tomate pelado + paprika + alho + cebola. Desfia e congela com molho.</div></div>
+      <div class="meal-row"><div class="meal-name">3. Soy-gengibre</div><div class="meal-ingr">Frango + molho soja light + gengibre + alho + pimenta. Perfeito com pimentos/courgette.</div></div>
+      <div class="meal-row"><div class="meal-name">4. Iogurte-curcuma</div><div class="meal-ingr">Iogurte grego + curcuma + pimenta preta + gengibre + limao. Marinar 30 min e cozinhar.</div></div>
+      <ol class="steps">
+        <li>Cozinha ate ficar bem passado. Se tiveres termometro, frango deve chegar a 74 C no centro.</li>
+        <li>Arrefece rapido em caixas rasas.</li>
+        <li>Frigorifico: usa em 3-4 dias. Congelador: melhor qualidade por 2-6 meses.</li>
+        <li>Descongela no frigorifico durante a noite. Nao deixes varias horas na bancada.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Montagem rapida das pasta salads</div>
+      <div class="meal-row"><div class="meal-name">Caixa 1 - Frango pepino menta</div><div class="meal-ingr">Massa + frango limao-alho + pepino + tomate + menta + molho iogurte.</div></div>
+      <div class="meal-row"><div class="meal-name">Caixa 2 - Atum grao</div><div class="meal-ingr">Massa + atum + grao + pepino + cebola + limao.</div></div>
+      <div class="meal-row"><div class="meal-name">Caixa 3 - Peru tomate</div><div class="meal-ingr">Massa + peru tomate + espinafres + pimentos.</div></div>
+      <div class="meal-row"><div class="meal-name">Caixa 4 - Sardinha mediterranica</div><div class="meal-ingr">Massa + sardinhas escorridas + tomate + pepino + limao.</div></div>
+      <div class="meal-row"><div class="meal-name">Caixa 5 - Frango grao</div><div class="meal-ingr">Massa + frango + grao + folhas verdes + molho limao/menta.</div></div>
+    </div>
+  </section>
+
+  <section id="shop" class="sec">
+    <h2 class="section-title">Lista de compras corrigida</h2>
+    <p class="section-kicker">Retirei o arroz como base e puxei massa, frango para congelar, pepino/menta/limao/gengibre e ingredientes das saladas.</p>
+    <div class="tip"><p>Toca em cada item para marcar como comprado. A lista guarda o estado nesta sessao.</p></div>
+    <div id="shop-content"></div>
+    <button class="reset-btn" onclick="resetShop()">Limpar marcacoes</button>
+  </section>
+
+  <section id="phases" class="sec">
+    <h2 class="section-title">Fases dos 3 meses</h2>
+    <p class="section-kicker">O plano fica simples no inicio e fica mais forte quando o corpo ja aguenta. O peso esperado e uma faixa, nao uma sentenca.</p>
+
+    <div class="phase-card ph1">
+      <div class="phase-title">Mes 1 - Fundacao</div>
+      <div class="phase-sub">Semanas 1-4</div>
+      <div class="phase-row"><strong>Peso</strong> - alvo de -2 a -4 kg.</div>
+      <div class="phase-row"><strong>Cintura</strong> - alvo de -2 a -4 cm no abdomen.</div>
+      <div class="phase-row"><strong>Treino</strong> - aprender movimentos e cumprir Terca a Sabado sem exagerar na carga.</div>
+      <div class="phase-row"><strong>Comida</strong> - acertar caixas, proteina e bebidas sem falhar.</div>
+    </div>
+
+    <div class="phase-card ph2">
+      <div class="phase-title">Mes 2 - Construcao</div>
+      <div class="phase-sub">Semanas 5-8</div>
+      <div class="phase-row"><strong>Peso</strong> - alvo acumulado de -4 a -7 kg.</div>
+      <div class="phase-row"><strong>Cintura</strong> - roupa mais solta, menos barriga/inchaco.</div>
+      <div class="phase-row"><strong>Treino</strong> - subir cargas com tecnica, manter caminhada e cortar cardio final se a recuperacao cair.</div>
+      <div class="phase-row"><strong>Comida</strong> - repetir as melhores pasta salads, reduzir extras invisiveis: azeite, amendoins, queijo, vinho.</div>
+    </div>
+
+    <div class="phase-card ph3">
+      <div class="phase-title">Mes 3 - Definicao</div>
+      <div class="phase-sub">Semanas 9-12</div>
+      <div class="phase-row"><strong>Peso</strong> - alvo acumulado de -6 a -10 kg.</div>
+      <div class="phase-row"><strong>Gordura</strong> - se a maior parte da perda vier de gordura, podes aproximar 24-26% BF.</div>
+      <div class="phase-row"><strong>Treino</strong> - ombros/costas mais fortes, core mais estavel, cardio melhor.</div>
+      <div class="phase-row"><strong>Depois</strong> - abs bem definidos normalmente exigem continuar abaixo disso por mais meses. Este plano cria a base.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Fontes usadas para as regras</div>
+      <div class="link-row">
+        <a class="link-btn" href="https://www.cdc.gov/healthy-weight-growth/losing-weight/index.html" target="_blank">CDC perda de peso</a>
+        <a class="link-btn" href="https://www.cdc.gov/physical-activity-basics/guidelines/adults.html" target="_blank">CDC atividade fisica</a>
+        <a class="link-btn" href="https://alimentacaosaudavel.dgs.pt/roda-dos-alimentos/" target="_blank">DGS Roda dos Alimentos</a>
+        <a class="link-btn" href="https://jissn.biomedcentral.com/articles/10.1186/s12970-017-0177-8" target="_blank">ISSN proteina</a>
+        <a class="link-btn" href="https://jissn.biomedcentral.com/articles/10.1186/s12970-017-0173-z" target="_blank">ISSN creatina</a>
+        <a class="link-btn" href="https://www.cdc.gov/sleep/about/index.html" target="_blank">CDC sono</a>
+        <a class="link-btn" href="https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts" target="_blank">FoodSafety.gov conservacao</a>
+        <a class="link-btn" href="https://www.budgetbytes.com/greek-chicken-pasta-salad/" target="_blank">Budget Bytes salada</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">
+  Plano 3 Meses - atualizado para 112.4 kg, 187 cm, gordura 29.3%, abdomen 107 cm, ginasio Terca a Sabado e refeicoes com massa em vez de arroz.
+</div>
+
+<script>
+const SHOP_ITEMS = {
+  "Proteinas": [
+    "Peito de frango ou coxas sem pele (2 kg para congelar)",
+    "Peru em cubos ou carne picada de peru (1 kg)",
+    "Ovos classe L (2 duzias)",
+    "Iogurte grego natural/0% (2 potes grandes ou packs)",
+    "Atum em agua ou azeite escorrido (6-8 latas)",
+    "Sardinhas em lata (4 latas)",
+    "Queijo cottage/light ou flamengo fatiado (opcional)",
+    "Whey neutra/baunilha",
+    "Creatina monohidratada"
+  ],
+  "Massa e hidratos": [
+    "Massa integral fusilli/penne (1.5 kg)",
+    "Aveia em flocos (1 kg)",
+    "Pao integral",
+    "Wraps/tortilhas para tortilla pizza",
+    "Grao-de-bico (3 latas)",
+    "Feijao vermelho/preto (2-3 latas)",
+    "Lentilhas vermelhas (500 g)",
+    "Batata ou batata-doce (opcional para variar)",
+    "Sem arroz nesta versao do plano"
+  ],
+  "Legumes e saladas": [
+    "Pepino (5-6 unidades)",
+    "Menta/hortela fresca (2 ramos)",
+    "Espinafres frescos (saco grande)",
+    "Folhas de salada mista",
+    "Tomate cereja ou tomate normal",
+    "Pimentos mistos",
+    "Courgette",
+    "Brocolo",
+    "Cebola roxa",
+    "Alho",
+    "Cenouras",
+    "Tomate pelado/lata para molho"
+  ],
+  "Fruta": [
+    "Limoes (12)",
+    "Limas (4)",
+    "Morangos (1 caixa)",
+    "Gengibre fresco",
+    "Macas verdes/vermelhas",
+    "Bananas",
+    "Frutos vermelhos congelados"
+  ],
+  "Molhos e condimentos": [
+    "Azeite",
+    "Vinagre de maca cru nao filtrado (com a mae)",
+    "Molho soja light",
+    "Molho tomate/pizza",
+    "Mozzarella ou queijo ralado em porcao controlada",
+    "Oregao",
+    "Canela",
+    "Curcuma",
+    "Paprika",
+    "Cominhos",
+    "Pimenta preta",
+    "Ervas italianas/Provence",
+    "Mel (opcional)"
+  ],
+  "Bebidas e utensilios": [
+    "Cha verde",
+    "Garrafa 1 L para agua pepino/menta",
+    "Garrafa 1 L para agua lima/menta",
+    "Caixas para meal prep",
+    "Sacos/caixas de congelacao",
+    "Palhinhas para ACV",
+    "Shaker"
+  ]
+};
+
+let checked = {};
+
+function buildShop() {
+  const container = document.getElementById("shop-content");
+  container.innerHTML = "";
+  for (const [category, items] of Object.entries(SHOP_ITEMS)) {
+    const group = document.createElement("div");
+    group.className = "shop-cat";
+    group.innerHTML = `<div class="shop-cat-title">${category}</div>`;
+    items.forEach((item, index) => {
+      const key = `${category}_${index}`;
+      const done = Boolean(checked[key]);
+      const row = document.createElement("div");
+      row.className = "shop-item";
+      row.onclick = () => {
+        checked[key] = !checked[key];
+        buildShop();
+      };
+      row.innerHTML = `<div class="shop-check${done ? " done" : ""}"></div><div class="shop-text${done ? " done" : ""}">${item}</div>`;
+      group.appendChild(row);
+    });
+    container.appendChild(group);
+  }
+}
+
+function resetShop() {
+  checked = {};
+  buildShop();
+}
+
+function showTab(id, button) {
+  document.querySelectorAll(".sec").forEach((section) => section.classList.remove("on"));
+  document.querySelectorAll(".nav button").forEach((navButton) => navButton.classList.remove("active"));
+  document.getElementById(id).classList.add("on");
+  button.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showDay(id, button) {
+  const wrap = button.closest(".sec");
+  wrap.querySelectorAll(".day-sec").forEach((section) => section.classList.remove("on"));
+  wrap.querySelectorAll(".day-tab").forEach((tab) => tab.classList.remove("active"));
+  document.getElementById(id).classList.add("on");
+  button.classList.add("active");
+}
+
+buildShop();
+</script>
+</body>
+</html>
