@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.Plano3Meses" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">#FBFAF6</item>
-        <item name="android:navigationBarColor">#FBFAF6</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 </resources>
