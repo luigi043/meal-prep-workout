@@ -1,6 +1,10 @@
 package com.luizfit.plan3meses.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,29 +16,73 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowOutward
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.outlined.Bedtime
+import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.FitnessCenter
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.LocalDrink
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.Straighten
+import androidx.compose.material.icons.outlined.TrendingUp
+import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material.icons.rounded.FitnessCenter
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Restaurant
+import androidx.compose.material.icons.rounded.ShoppingCart
+import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -61,20 +109,23 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 
+// ----------------------------------------------------------------------------
+// Navigation
+// ----------------------------------------------------------------------------
+
 private data class AppDestination(
     val route: String,
     val label: String,
-    val short: String
+    val outlined: ImageVector,
+    val filled: ImageVector
 )
 
 private val destinations = listOf(
-    AppDestination("dashboard", "Inicio", "I"),
-    AppDestination("week", "Semana", "S"),
-    AppDestination("meals", "Refeicoes", "R"),
-    AppDestination("drinks", "Bebidas", "B"),
-    AppDestination("workout", "Treino", "T"),
-    AppDestination("shopping", "Compras", "C"),
-    AppDestination("progress", "Progresso", "P")
+    AppDestination("dashboard", "Hoje", Icons.Outlined.Home, Icons.Rounded.Home),
+    AppDestination("workout", "Treino", Icons.Outlined.FitnessCenter, Icons.Rounded.FitnessCenter),
+    AppDestination("meals", "Comer", Icons.Outlined.Restaurant, Icons.Rounded.Restaurant),
+    AppDestination("shopping", "Compras", Icons.Outlined.ShoppingCart, Icons.Rounded.ShoppingCart),
+    AppDestination("progress", "Eu", Icons.Outlined.TrendingUp, Icons.Rounded.TrendingUp)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,49 +145,58 @@ fun Plano3MesesApp() {
         scope.launch { repository.setCompleted(id, checked) }
     }
 
+    val currentDestination = destinations.firstOrNull { it.route == currentRoute }
+
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (showChrome) {
-                TopAppBar(
+                CenterAlignedTopAppBar(
                     title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(R.drawable.logoapp),
-                                contentDescription = "Logo Plano 3 Meses",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .width(42.dp)
-                                    .height(42.dp)
-                            )
-                            Spacer(Modifier.width(10.dp))
-                            Column {
-                                Text("Plano 3 Meses", fontWeight = FontWeight.Bold)
-                                Text(
-                                    "Luiz - treino, refeicoes, bebidas e progresso",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
+                        Text(
+                            currentDestination?.label ?: "Plano 3 Meses",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        scrolledContainerColor = MaterialTheme.colorScheme.background
+                    )
                 )
             }
         },
         bottomBar = {
             if (showChrome) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                    tonalElevation = 0.dp
+                ) {
                     destinations.forEach { destination ->
+                        val selected = currentRoute == destination.route
                         NavigationBarItem(
-                            selected = currentRoute == destination.route,
+                            selected = selected,
                             onClick = { goTo(destination.route) },
-                            icon = { Text(destination.short, fontWeight = FontWeight.Bold) },
+                            icon = {
+                                Icon(
+                                    imageVector = if (selected) destination.filled else destination.outlined,
+                                    contentDescription = destination.label
+                                )
+                            },
                             label = {
                                 Text(
                                     destination.label,
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.labelMedium
                                 )
-                            }
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         )
                     }
                 }
@@ -151,25 +211,16 @@ fun Plano3MesesApp() {
                 .padding(innerPadding)
         ) {
             composable("welcome") {
-                WelcomeScreen(
-                    progress = progress,
-                    goTo = goTo
-                )
+                WelcomeScreen(progress = progress, goTo = goTo)
             }
             composable("dashboard") {
-                DashboardScreen(progress = progress, onToggle = onToggle)
-            }
-            composable("week") {
-                WeekScreen()
-            }
-            composable("meals") {
-                MealsScreen()
-            }
-            composable("drinks") {
-                DrinksScreen(progress = progress, onToggle = onToggle)
+                DashboardScreen(progress = progress, onToggle = onToggle, goTo = goTo)
             }
             composable("workout") {
                 WorkoutScreen(progress = progress, onToggle = onToggle)
+            }
+            composable("meals") {
+                MealsScreen(progress = progress, onToggle = onToggle)
             }
             composable("shopping") {
                 ShoppingScreen(progress = progress, onToggle = onToggle)
@@ -186,164 +237,184 @@ fun Plano3MesesApp() {
     }
 }
 
+// ----------------------------------------------------------------------------
+// Welcome
+// ----------------------------------------------------------------------------
+
 @Composable
 private fun WelcomeScreen(
     progress: ProgressState,
     goTo: (String) -> Unit
 ) {
     val today = LocalDate.now().dayOfWeek
-    val drink = todayDrinkRotation(today)
+    val dailyIds = PlanContent.dashboardTasks.map { it.id }
+    val dailyCompleted = progress.completionCountFor(dailyIds)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        Spacer(Modifier.height(8.dp))
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.logoapp),
+                contentDescription = "Logo Plano 3 Meses",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(180.dp)
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                "Plano 3 Meses",
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                "Treino, refeicoes, bebidas e progresso. Sem complicar.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        ElevatedCard(
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                ProgressRing(
+                    completed = dailyCompleted,
+                    total = dailyIds.size,
+                    size = 72.dp,
+                    stroke = 8.dp,
+                    trackColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.18f),
+                    progressColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(today.portugueseName(), style = MaterialTheme.typography.labelLarge)
+                    Text("Plano de hoje", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "$dailyCompleted de ${dailyIds.size} tarefas",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        Button(
+            onClick = { goTo("dashboard") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = MaterialTheme.shapes.large
+        ) {
+            Text("Entrar no plano", style = MaterialTheme.typography.titleMedium)
+        }
+        Text(
+            "Luiz - 3 meses, foco em consistencia",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Dashboard ("Hoje")
+// ----------------------------------------------------------------------------
+
+@Composable
+private fun DashboardScreen(
+    progress: ProgressState,
+    onToggle: (String, Boolean) -> Unit,
+    goTo: (String) -> Unit
+) {
+    val today = LocalDate.now().dayOfWeek
+    val workout = PlanContent.workoutFor(today)
+    val drink = PlanContent.drinkFor(today)
     val dailyIds = PlanContent.dashboardTasks.map { it.id }
     val dailyCompleted = progress.completionCountFor(dailyIds)
 
     ScreenColumn {
         item {
-            LogoHeader(compact = false)
-        }
-        item {
-            PlanCard("Plano 3 Meses", "Treino, refeicoes, bebidas e progresso") {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    MetricPill("112.4 kg", "peso", Modifier.weight(1f))
-                    MetricPill("29.3%", "gordura", Modifier.weight(1f))
-                    MetricPill("107 cm", "abdomen", Modifier.weight(1f))
-                }
-            }
-        }
-        item {
-            TodaySummaryCard(
+            HeroGreeting(
                 dayName = today.portugueseName(),
-                workout = todayWorkoutOrRest(today),
-                drink = drink.title,
-                sleep = "22:10 dormir - 5:55 acordar",
-                progressText = "$dailyCompleted/${dailyIds.size} tarefas - ${progressPercent(dailyCompleted, dailyIds.size)}%"
+                completed = dailyCompleted,
+                total = dailyIds.size
             )
         }
         item {
-            PrimaryActionButton("Entrar no plano") {
-                goTo("dashboard")
-            }
-        }
-        item {
-            QuickActionRow(
-                actions = listOf(
-                    "Treino de hoje" to "workout",
-                    "Bebidas" to "drinks",
-                    "Compras" to "shopping"
-                ),
-                goTo = goTo
+            TodayWorkoutCard(
+                workout = workout,
+                fallbackText = todayWorkoutOrRest(today),
+                onOpen = { goTo("workout") }
             )
         }
-    }
-}
-
-@Composable
-private fun DashboardScreen(
-    progress: ProgressState,
-    onToggle: (String, Boolean) -> Unit
-) {
-    val today = LocalDate.now().dayOfWeek
-    val workout = PlanContent.workoutFor(today)
-    val drink = PlanContent.drinkFor(today)
-    val completedCount = progress.completedIds.size
-
-    ScreenColumn {
         item {
-            LogoHeader(compact = true)
+            QuickStatsRow()
         }
         item {
-            SectionHeader("Dashboard", "Hoje: ${today.portugueseName()}")
-        }
-        item {
-            PlanCard("Resumo de hoje", workout?.focus ?: "Sem ginasio planeado") {
-                InfoLine("Treino", workout?.title ?: "Descanso ativo, caminhada leve ou prep.")
-                InfoLine("Bebida", drink.title)
-                InfoLine("Sono", "Cama 22:00, dormir 22:10, acordar 5:55.")
-                InfoLine("Checklist", "$completedCount itens marcados no plano.")
-            }
-        }
-        item {
-            MetricGrid()
-        }
-        item {
-            PlanCard("Acoes do dia", "Marca o que cumpriste") {
+            SectionCard(
+                title = "Tarefas de hoje",
+                subtitle = "Marca o que cumpriste",
+                icon = Icons.Outlined.Bolt
+            ) {
                 PlanContent.dashboardTasks.forEach { task ->
                     CheckTaskRow(task, progress.completedIds.contains(task.id), onToggle)
                 }
             }
         }
         item {
-            SupplementCard()
-        }
-    }
-}
-
-@Composable
-private fun WeekScreen() {
-    ScreenColumn {
-        item {
-            SectionHeader("Semana", "Trabalho 8:00-17:00, ginasio terca a sabado")
+            DrinkSuggestionCard(drink = drink, onOpen = { goTo("meals") })
         }
         item {
-            PlanCard("Rotina da manha", "Bike + caminhada sem destruir a recuperacao") {
-                PlanContent.weeklySchedule.forEach { InfoLine("Dia", it) }
+            SectionCard(
+                title = "Sono",
+                subtitle = "Prioridade para perder gordura e recuperar",
+                icon = Icons.Outlined.Bedtime
+            ) {
+                BulletLine("22:00", "Cama, luzes apagadas.")
+                BulletLine("22:10", "Dormir.")
+                BulletLine("05:55", "Acordar.")
             }
         }
         item {
-            PlanCard("Sono", "Prioridade para perder gordura e recuperar") {
-                PlanContent.sleepPlan.forEach { InfoLine("Horario", it) }
-            }
-        }
-        item {
-            PlanCard("Regras de ajuste", "Mantem simples") {
-                InfoLine("Peso parado", "Corta 150-200 kcal/dia, geralmente massa/azeite/frutos secos.")
-                InfoLine("Energia baixa", "Adiciona banana pre-treino e confirma sono.")
-                InfoLine("Semana pesada", "Corta cardio final antes de cortar musculacao.")
+            SectionCard(
+                title = "Suplementacao",
+                subtitle = "Simples e consistente",
+                icon = Icons.Outlined.Bolt
+            ) {
+                BulletLine("Creatina", "5 g/dia ao pequeno-almoco. Nos dias de ginasio tambem pode ser pos-treino.")
+                BulletLine("Whey", "1 scoop quando faltar proteina. Boa as 16:00 ou pos-treino.")
+                BulletLine("Nota", "Creatina pode subir peso por agua no musculo; isso nao e gordura.")
             }
         }
     }
 }
 
-@Composable
-private fun MealsScreen() {
-    val uriHandler = LocalUriHandler.current
-
-    ScreenColumn {
-        item {
-            SectionHeader("Refeicoes", "Pasta salads, frango, pizza controlada e meal prep")
-        }
-        item {
-            PlanCard("Budget Bytes adaptado", "Links para inspiracao, com porcoes do teu plano") {
-                LinkButton("Budget Bytes", "https://www.budgetbytes.com/", uriHandler::openUri)
-                LinkButton("Greek chicken pasta salad", "https://www.budgetbytes.com/greek-chicken-pasta-salad/", uriHandler::openUri)
-                LinkButton("Pizza chicken", "https://www.budgetbytes.com/baked-pizza-chicken/", uriHandler::openUri)
-                InfoLine("Porcao de massa", "70-90 g seca por refeicao principal, ou 180-240 g ja cozida.")
-                InfoLine("Pizza", "1x/semana planeada: pizza chicken, tortilla pizza ou 2 fatias pan pizza + salada.")
-            }
-        }
-        items(PlanContent.meals) { mealDay ->
-            MealDayCard(mealDay)
-        }
-    }
-}
-
-@Composable
-private fun DrinksScreen(
-    progress: ProgressState,
-    onToggle: (String, Boolean) -> Unit
-) {
-    ScreenColumn {
-        item {
-            SectionHeader("Bebidas", "Hidratacao com variedade sem calorias liquidas")
-        }
-        items(PlanContent.drinks) { recipe ->
-            RecipeCard(
-                recipe = recipe,
-                checked = progress.completedIds.contains(recipe.id),
-                onToggle = onToggle
-            )
-        }
-    }
-}
+// ----------------------------------------------------------------------------
+// Workout
+// ----------------------------------------------------------------------------
 
 @Composable
 private fun WorkoutScreen(
@@ -351,146 +422,225 @@ private fun WorkoutScreen(
     onToggle: (String, Boolean) -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
+    val today = LocalDate.now().dayOfWeek
+    val initialIndex = PlanContent.workouts.indexOfFirst { it.dayOfWeek == today }.coerceAtLeast(0)
+    var selectedIndex by remember { mutableStateOf(initialIndex) }
+    val selected = PlanContent.workouts[selectedIndex]
 
     ScreenColumn {
         item {
-            SectionHeader("Treino", "Gym Workout - terca a sabado")
+            SectionHeader(
+                title = "Treino",
+                subtitle = "Terca a sabado as 18:15"
+            )
         }
         item {
-            PlanCard("Links uteis", "Tecnica primeiro, carga depois") {
-                LinkButton("MuscleWiki", "https://musclewiki.com/", uriHandler::openUri)
-                LinkButton("Workout.lol", "https://workout.lol/", uriHandler::openUri)
+            DayChipRow(
+                selectedIndex = selectedIndex,
+                onSelect = { selectedIndex = it }
+            )
+        }
+        item {
+            WorkoutDetailCard(
+                workout = selected,
+                checked = progress.completedIds.contains(selected.id),
+                onToggle = onToggle
+            )
+        }
+        item {
+            SectionCard(
+                title = "Links uteis",
+                subtitle = "Tecnica primeiro, carga depois",
+                icon = Icons.Outlined.FitnessCenter
+            ) {
+                LinkRow("MuscleWiki", "https://musclewiki.com/", uriHandler::openUri)
+                LinkRow("Workout.lol", "https://workout.lol/", uriHandler::openUri)
             }
         }
-        items(PlanContent.workouts) { workout ->
-            WorkoutCard(
-                workout = workout,
-                checked = progress.completedIds.contains(workout.id),
-                onToggle = onToggle
+    }
+}
+
+@Composable
+private fun DayChipRow(
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        PlanContent.workouts.forEachIndexed { index, workout ->
+            FilterChip(
+                selected = selectedIndex == index,
+                onClick = { onSelect(index) },
+                label = {
+                    Text(
+                        workout.dayOfWeek.shortLabel(),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                modifier = Modifier.weight(1f)
             )
         }
     }
 }
 
 @Composable
-private fun ShoppingScreen(
+private fun WorkoutDetailCard(
+    workout: Workout,
+    checked: Boolean,
+    onToggle: (String, Boolean) -> Unit
+) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
+        )
+    ) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(workout.title, style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        workout.focus,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        workout.totalTime,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Rounded.FitnessCenter,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+
+            FilledTonalButton(
+                onClick = { onToggle(workout.id, !checked) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = if (checked) {
+                    ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    ButtonDefaults.filledTonalButtonColors()
+                }
+            ) {
+                Text(if (checked) "Treino concluido" else "Marcar como feito")
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            workout.sections.forEach { section ->
+                BulletLine(section.label, "${section.title}: ${section.detail}")
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Meals (with Refeicoes / Bebidas tabs)
+// ----------------------------------------------------------------------------
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MealsScreen(
     progress: ProgressState,
     onToggle: (String, Boolean) -> Unit
 ) {
-    ScreenColumn {
-        item {
-            SectionHeader("Compras", "Toca para marcar comprado")
-        }
-        items(PlanContent.shopping) { category ->
-            PlanCard(category.title) {
-                category.items.forEach { item ->
-                    CheckTaskRow(item, progress.completedIds.contains(item.id), onToggle)
-                }
-            }
-        }
-    }
-}
+    var tab by remember { mutableStateOf(0) }
+    val tabs = listOf("Refeicoes", "Bebidas")
+    val uriHandler = LocalUriHandler.current
 
-@Composable
-private fun ProgressScreen(
-    progress: ProgressState,
-    onToggle: (String, Boolean) -> Unit,
-    onWeightChange: (String) -> Unit,
-    onAbdomenChange: (String) -> Unit
-) {
-    ScreenColumn {
-        item {
-            SectionHeader("Progresso", "Peso, abdomen e check semanal")
-        }
-        item {
-            PlanCard("Medidas semanais", "Regista 1x por semana, de manha") {
-                OutlinedTextField(
-                    value = progress.weeklyWeight,
-                    onValueChange = onWeightChange,
-                    label = { Text("Peso atual / semanal") },
-                    suffix = { Text("kg") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
-                    value = progress.weeklyAbdomen,
-                    onValueChange = onAbdomenChange,
-                    label = { Text("Abdomen semanal") },
-                    suffix = { Text("cm") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.fillMaxWidth()
+    Column(modifier = Modifier.fillMaxSize()) {
+        PrimaryTabRow(
+            selectedTabIndex = tab,
+            containerColor = MaterialTheme.colorScheme.background
+        ) {
+            tabs.forEachIndexed { index, label ->
+                Tab(
+                    selected = tab == index,
+                    onClick = { tab = index },
+                    text = { Text(label, style = MaterialTheme.typography.titleSmall) }
                 )
             }
         }
-        item {
-            PlanCard("Checklist semanal", "Marca quando estiver feito") {
-                val weeklyTasks = listOf(
-                    ChecklistTask("week_weight", "Peso registado", "1x por semana, mesma hora."),
-                    ChecklistTask("week_abdomen", "Abdomen medido", "Fita no mesmo ponto."),
-                    ChecklistTask("week_meal_prep", "Meal prep feito", "Frango, massa, legumes e bebidas."),
-                    ChecklistTask("week_shopping", "Compras feitas", "Lista completa para a semana.")
-                )
-                weeklyTasks.forEach { task ->
-                    CheckTaskRow(task, progress.completedIds.contains(task.id), onToggle)
-                }
-            }
-        }
-        item {
-            PlanCard("Alvo realista", "3 meses") {
-                InfoLine("Peso", "-6 a -10 kg se a consistencia estiver boa.")
-                InfoLine("Abdomen", "-6 a -10 cm e roupa mais solta.")
-                InfoLine("Abs", "Definicao forte pode precisar de mais tempo, mas a base comeca agora.")
-            }
-        }
-    }
-}
 
-@Composable
-private fun MetricGrid() {
-    PlanCard("Perfil atual", "Consulta e metas corrigidas") {
-        PlanContent.metrics.chunked(2).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                row.forEach { metric ->
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        modifier = Modifier.weight(1f)
+        when (tab) {
+            0 -> ScreenColumn {
+                item {
+                    SectionHeader(
+                        title = "Refeicoes",
+                        subtitle = "Pasta salads, frango, pizza controlada"
+                    )
+                }
+                item {
+                    SectionCard(
+                        title = "Budget Bytes adaptado",
+                        subtitle = "Inspiracao com porcoes do teu plano",
+                        icon = Icons.Outlined.Restaurant
                     ) {
-                        Column(Modifier.padding(12.dp)) {
-                            Text(metric.label, style = MaterialTheme.typography.labelMedium)
-                            Text(
-                                metric.value,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(metric.note, style = MaterialTheme.typography.bodySmall)
-                        }
+                        LinkRow("Budget Bytes", "https://www.budgetbytes.com/", uriHandler::openUri)
+                        LinkRow("Greek chicken pasta salad", "https://www.budgetbytes.com/greek-chicken-pasta-salad/", uriHandler::openUri)
+                        LinkRow("Pizza chicken", "https://www.budgetbytes.com/baked-pizza-chicken/", uriHandler::openUri)
+                        BulletLine("Porcao de massa", "70-90 g seca por refeicao principal, ou 180-240 g cozida.")
+                        BulletLine("Pizza", "1x/semana: pizza chicken, tortilla pizza ou 2 fatias pan pizza + salada.")
                     }
                 }
-                if (row.size == 1) {
-                    Spacer(Modifier.weight(1f))
+                items(PlanContent.meals) { mealDay ->
+                    MealDayCard(mealDay)
                 }
             }
-            Spacer(Modifier.height(10.dp))
+            1 -> ScreenColumn {
+                item {
+                    SectionHeader(
+                        title = "Bebidas",
+                        subtitle = "Hidratacao com variety, 0 kcal liquidas"
+                    )
+                }
+                items(PlanContent.drinks) { recipe ->
+                    RecipeCard(
+                        recipe = recipe,
+                        checked = progress.completedIds.contains(recipe.id),
+                        onToggle = onToggle
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun MealDayCard(mealDay: MealDay) {
-    PlanCard("${mealDay.day} - ${mealDay.title}") {
+    SectionCard(
+        title = "${mealDay.day} - ${mealDay.title}",
+        icon = Icons.Outlined.Restaurant
+    ) {
         mealDay.meals.forEach { meal ->
-            InfoLine(meal.time, "${meal.title}: ${meal.detail}")
+            BulletLine(meal.time, "${meal.title}: ${meal.detail}")
             if (meal.macros.isNotBlank()) {
                 Text(
                     meal.macros,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 15.dp, top = 2.dp, bottom = 4.dp)
                 )
             }
         }
@@ -503,176 +653,519 @@ private fun RecipeCard(
     checked: Boolean,
     onToggle: (String, Boolean) -> Unit
 ) {
-    PlanCard(recipe.title, recipe.timing) {
-        CheckTaskRow(
-            task = ChecklistTask(recipe.id, "Fiz / preparei esta bebida", recipe.note),
-            checked = checked,
-            onToggle = onToggle
-        )
-        InfoLine("Ingredientes", recipe.ingredients)
-        recipe.steps.forEachIndexed { index, step ->
-            InfoLine("${index + 1}", step)
+    SectionCard(
+        title = recipe.title,
+        subtitle = recipe.timing,
+        icon = Icons.Outlined.LocalDrink
+    ) {
+        FilledTonalButton(
+            onClick = { onToggle(recipe.id, !checked) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = if (checked) {
+                ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                ButtonDefaults.filledTonalButtonColors()
+            }
+        ) {
+            Text(if (checked) "Preparada" else "Marcar preparada")
         }
-        InfoLine("Nota", recipe.note)
+        BulletLine("Ingredientes", recipe.ingredients)
+        recipe.steps.forEachIndexed { index, step ->
+            BulletLine("${index + 1}", step)
+        }
+        BulletLine("Nota", recipe.note)
     }
 }
 
+// ----------------------------------------------------------------------------
+// Shopping (expandable categories + global progress)
+// ----------------------------------------------------------------------------
+
 @Composable
-private fun WorkoutCard(
-    workout: Workout,
-    checked: Boolean,
+private fun ShoppingScreen(
+    progress: ProgressState,
     onToggle: (String, Boolean) -> Unit
 ) {
-    PlanCard(workout.title, "${workout.focus} - ${workout.totalTime}") {
-        CheckTaskRow(
-            task = ChecklistTask(workout.id, "Treino concluido", workout.focus),
-            checked = checked,
-            onToggle = onToggle
-        )
-        workout.sections.forEach { section ->
-            InfoLine(section.label, "${section.title}: ${section.detail}")
+    val allItems = remember { PlanContent.shopping.flatMap { it.items } }
+    val done = allItems.count { progress.completedIds.contains(it.id) }
+
+    ScreenColumn {
+        item {
+            SectionHeader(
+                title = "Compras",
+                subtitle = "Toca para marcar comprado"
+            )
         }
-    }
-}
-
-@Composable
-private fun SupplementCard() {
-    PlanCard("Creatina e whey", "Simples e consistente") {
-        InfoLine("Creatina", "5 g todos os dias. Melhor: pequeno-almoco. Nos dias de ginasio tambem pode ser pos-treino.")
-        InfoLine("Whey", "1 scoop quando faltar proteina. Melhor: 16:00 ou depois do ginasio se o jantar atrasar.")
-        InfoLine("Nota", "Creatina pode subir peso por agua no musculo; isso nao e gordura.")
-    }
-}
-
-@Composable
-private fun LogoHeader(compact: Boolean) {
-    val imageHeight = if (compact) 104.dp else 238.dp
-    val verticalPadding = if (compact) 10.dp else 18.dp
-
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = verticalPadding, horizontal = 18.dp)
-        ) {
-            Image(
-                painter = painterResource(R.drawable.logoapp),
-                contentDescription = "Logo Plano 3 Meses",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(imageHeight)
+        item {
+            ProgressBarCard(
+                title = "$done de ${allItems.size} itens",
+                subtitle = "Lista para a semana",
+                fraction = if (allItems.isEmpty()) 0f else done.toFloat() / allItems.size
+            )
+        }
+        items(PlanContent.shopping) { category ->
+            ExpandableCategoryCard(
+                title = category.title,
+                items = category.items,
+                progress = progress,
+                onToggle = onToggle
             )
         }
     }
 }
 
 @Composable
-private fun PrimaryActionButton(
-    label: String,
-    onClick: () -> Unit
+private fun ExpandableCategoryCard(
+    title: String,
+    items: List<ChecklistTask>,
+    progress: ProgressState,
+    onToggle: (String, Boolean) -> Unit
 ) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+    var expanded by remember { mutableStateOf(false) }
+    val done = items.count { progress.completedIds.contains(it.id) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
+        )
     ) {
-        Text(label, fontWeight = FontWeight.Bold)
+        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(title, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "$done / ${items.size}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                        contentDescription = if (expanded) "Fechar" else "Abrir"
+                    )
+                }
+            }
+            AnimatedVisibility(visible = expanded) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.padding(top = 8.dp)) {
+                    items.forEach { item ->
+                        CheckTaskRow(item, progress.completedIds.contains(item.id), onToggle)
+                    }
+                }
+            }
+        }
     }
 }
 
+// ----------------------------------------------------------------------------
+// Progress ("Eu")
+// ----------------------------------------------------------------------------
+
 @Composable
-private fun QuickActionRow(
-    actions: List<Pair<String, String>>,
-    goTo: (String) -> Unit
+private fun ProgressScreen(
+    progress: ProgressState,
+    onToggle: (String, Boolean) -> Unit,
+    onWeightChange: (String) -> Unit,
+    onAbdomenChange: (String) -> Unit
 ) {
-    PlanCard("Atalhos rapidos", "Abrir diretamente o que precisas agora") {
-        actions.forEach { (label, route) ->
-            OutlinedButton(
-                onClick = { goTo(route) },
-                modifier = Modifier.fillMaxWidth()
+    ScreenColumn {
+        item {
+            SectionHeader(
+                title = "Progresso",
+                subtitle = "Peso, abdomen e check semanal"
+            )
+        }
+        item {
+            MetricGrid()
+        }
+        item {
+            SectionCard(
+                title = "Medidas semanais",
+                subtitle = "Regista 1x por semana, de manha",
+                icon = Icons.Outlined.Straighten
             ) {
-                Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                OutlinedTextField(
+                    value = progress.weeklyWeight,
+                    onValueChange = onWeightChange,
+                    label = { Text("Peso atual") },
+                    suffix = { Text("kg") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = progress.weeklyAbdomen,
+                    onValueChange = onAbdomenChange,
+                    label = { Text("Abdomen") },
+                    suffix = { Text("cm") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+        item {
+            SectionCard(
+                title = "Checklist semanal",
+                subtitle = "Marca quando estiver feito",
+                icon = Icons.Outlined.TrendingUp
+            ) {
+                val weeklyTasks = listOf(
+                    ChecklistTask("week_weight", "Peso registado", "1x por semana, mesma hora."),
+                    ChecklistTask("week_abdomen", "Abdomen medido", "Fita no mesmo ponto."),
+                    ChecklistTask("week_meal_prep", "Meal prep feito", "Frango, massa, legumes e bebidas."),
+                    ChecklistTask("week_shopping", "Compras feitas", "Lista completa para a semana.")
+                )
+                weeklyTasks.forEach { task ->
+                    CheckTaskRow(task, progress.completedIds.contains(task.id), onToggle)
+                }
+            }
+        }
+        item {
+            SectionCard(
+                title = "Rotina semanal",
+                subtitle = "Trabalho 8:00-17:00, ginasio terca a sabado",
+                icon = Icons.Outlined.TrendingUp
+            ) {
+                PlanContent.weeklySchedule.forEach { BulletLine("Dia", it) }
+            }
+        }
+        item {
+            SectionCard(
+                title = "Alvo 3 meses",
+                subtitle = "Realista, sem milagres",
+                icon = Icons.Outlined.TrendingUp
+            ) {
+                BulletLine("Peso", "-6 a -10 kg se a consistencia estiver boa.")
+                BulletLine("Abdomen", "-6 a -10 cm e roupa mais solta.")
+                BulletLine("Abs", "Definicao forte pode precisar de mais tempo. A base comeca agora.")
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Shared components
+// ----------------------------------------------------------------------------
+
+@Composable
+private fun HeroGreeting(dayName: String, completed: Int, total: Int) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            ProgressRing(
+                completed = completed,
+                total = total,
+                size = 84.dp,
+                stroke = 9.dp,
+                trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f),
+                progressColor = MaterialTheme.colorScheme.onPrimary
+            )
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("Bom dia, Luiz", style = MaterialTheme.typography.titleMedium)
+                Text(dayName, style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    "$completed/$total tarefas hoje",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
+                )
             }
         }
     }
 }
 
 @Composable
-private fun TodaySummaryCard(
-    dayName: String,
-    workout: String,
-    drink: String,
-    sleep: String,
-    progressText: String
+private fun TodayWorkoutCard(
+    workout: Workout?,
+    fallbackText: String,
+    onOpen: () -> Unit
 ) {
-    PlanCard("Hoje - $dayName", "Objetivo pratico para cumprir sem complicar") {
-        InfoLine("Treino", workout)
-        InfoLine("Bebida", drink)
-        InfoLine("Sono", sleep)
-        InfoLine("Checklist", progressText)
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
+        )
+    ) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Rounded.FitnessCenter,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                Spacer(Modifier.width(12.dp))
+                Text("Treino de hoje", style = MaterialTheme.typography.titleMedium)
+            }
+            if (workout != null) {
+                Text(workout.title, style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    workout.focus,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    workout.totalTime,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Text("Descanso ativo", style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    fallbackText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Button(
+                onClick = onOpen,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(if (workout != null) "Ver treino completo" else "Abrir treinos")
+            }
+        }
     }
 }
 
 @Composable
-private fun MetricPill(
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        modifier = modifier
+private fun QuickStatsRow() {
+    val stats = listOf(
+        Triple("112.4", "kg", "peso"),
+        Triple("29.3%", "", "gordura"),
+        Triple("107", "cm", "abdomen")
+    )
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        stats.forEach { (value, unit, label) ->
+            Card(
+                modifier = Modifier.weight(1f),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 14.dp, horizontal = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            value,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        if (unit.isNotEmpty()) {
+                            Spacer(Modifier.width(2.dp))
+                            Text(
+                                unit,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            )
+                        }
+                    }
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DrinkSuggestionCard(drink: Recipe, onOpen: () -> Unit) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+        )
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp, horizontal = 6.dp)
+                .padding(18.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text(
-                value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                label,
-                style = MaterialTheme.typography.labelSmall,
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Outlined.WaterDrop, contentDescription = null)
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text("Bebida de hoje", style = MaterialTheme.typography.labelLarge)
+                Text(drink.title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    drink.timing,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            IconButton(onClick = onOpen) {
+                Icon(Icons.Filled.ArrowOutward, contentDescription = "Abrir bebidas")
+            }
+        }
+    }
+}
+
+@Composable
+private fun MetricGrid() {
+    SectionCard(
+        title = "Perfil atual",
+        subtitle = "Da consulta e metas",
+        icon = Icons.Outlined.TrendingUp
+    ) {
+        PlanContent.metrics.chunked(2).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                row.forEach { metric ->
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(metric.label, style = MaterialTheme.typography.labelMedium)
+                            Text(metric.value, style = MaterialTheme.typography.titleLarge)
+                            Text(metric.note, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
+                if (row.size == 1) {
+                    Spacer(Modifier.weight(1f))
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+private fun ProgressBarCard(title: String, subtitle: String, fraction: Float) {
+    val animated by animateFloatAsState(targetValue = fraction.coerceIn(0f, 1f), animationSpec = tween(600), label = "progress")
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    ) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(title, style = MaterialTheme.typography.headlineSmall)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall)
+            LinearProgressIndicator(
+                progress = { animated },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                trackColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.18f)
             )
         }
     }
 }
 
 @Composable
-private fun ScreenColumn(content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit) {
+private fun ProgressRing(
+    completed: Int,
+    total: Int,
+    size: androidx.compose.ui.unit.Dp,
+    stroke: androidx.compose.ui.unit.Dp,
+    trackColor: Color,
+    progressColor: Color
+) {
+    val fraction = if (total == 0) 0f else completed.toFloat() / total
+    val animated by animateFloatAsState(targetValue = fraction.coerceIn(0f, 1f), animationSpec = tween(700), label = "ring")
+    val pct = (animated * 100).toInt()
+
+    Box(modifier = Modifier.size(size), contentAlignment = Alignment.Center) {
+        androidx.compose.foundation.Canvas(modifier = Modifier.size(size)) {
+            val strokePx = stroke.toPx()
+            val arcSize = Size(this.size.width - strokePx, this.size.height - strokePx)
+            val topLeft = androidx.compose.ui.geometry.Offset(strokePx / 2, strokePx / 2)
+            drawArc(
+                color = trackColor,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
+                style = Stroke(width = strokePx, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+            )
+            drawArc(
+                color = progressColor,
+                startAngle = -90f,
+                sweepAngle = 360f * animated,
+                useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
+                style = Stroke(width = strokePx, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+            )
+        }
+        Text(
+            "$pct%",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = progressColor
+        )
+    }
+}
+
+@Composable
+private fun ScreenColumn(content: LazyListScope.() -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
         content = content
     )
 }
 
 @Composable
 private fun SectionHeader(title: String, subtitle: String) {
-    Column {
-        Text(
-            title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
+    Column(modifier = Modifier.padding(start = 4.dp, top = 4.dp, bottom = 4.dp)) {
+        Text(title, style = MaterialTheme.typography.headlineSmall)
         Text(
             subtitle,
             style = MaterialTheme.typography.bodyMedium,
@@ -682,26 +1175,50 @@ private fun SectionHeader(title: String, subtitle: String) {
 }
 
 @Composable
-private fun PlanCard(
+private fun SectionCard(
     title: String,
     subtitle: String? = null,
+    icon: ImageVector? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
+        )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            if (subtitle != null) {
-                Text(
-                    subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (icon != null) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            icon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(Modifier.width(12.dp))
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(title, style = MaterialTheme.typography.titleMedium)
+                    if (subtitle != null) {
+                        Text(
+                            subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
             content()
         }
@@ -709,15 +1226,33 @@ private fun PlanCard(
 }
 
 @Composable
-private fun InfoLine(label: String, value: String) {
-    Column(Modifier.fillMaxWidth()) {
-        Text(
-            label.uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary,
-            fontWeight = FontWeight.Bold
+private fun BulletLine(label: String, value: String) {
+    Row(
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 6.dp)
+                .width(3.dp)
+                .height(36.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.55f))
         )
-        Text(value, style = MaterialTheme.typography.bodyMedium)
+        Spacer(Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                label.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
@@ -728,16 +1263,26 @@ private fun CheckTaskRow(
     onToggle: (String, Boolean) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(
+                if (checked) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+                else Color.Transparent
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
             checked = checked,
-            onCheckedChange = { onToggle(task.id, it) }
+            onCheckedChange = { onToggle(task.id, it) },
+            colors = CheckboxDefaults.colors(
+                checkedColor = MaterialTheme.colorScheme.primary
+            )
         )
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(4.dp))
         Column(Modifier.weight(1f)) {
-            Text(task.title, fontWeight = FontWeight.SemiBold)
+            Text(task.title, style = MaterialTheme.typography.titleSmall)
             Text(
                 task.detail,
                 style = MaterialTheme.typography.bodySmall,
@@ -748,23 +1293,27 @@ private fun CheckTaskRow(
 }
 
 @Composable
-private fun LinkButton(
+private fun LinkRow(
     label: String,
     url: String,
     openUri: (String) -> Unit
 ) {
-    Button(
+    FilledTonalButton(
         onClick = { openUri(url) },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Text(label)
+        Text(label, modifier = Modifier.weight(1f))
+        Icon(Icons.Filled.ArrowOutward, contentDescription = null, modifier = Modifier.size(18.dp))
     }
 }
 
+// ----------------------------------------------------------------------------
+// Helpers
+// ----------------------------------------------------------------------------
+
 private fun NavHostController.goTo(route: String) {
-    if (currentDestination?.route == route) {
-        return
-    }
+    if (currentDestination?.route == route) return
 
     navigate(route) {
         launchSingleTop = true
@@ -777,10 +1326,7 @@ private fun NavHostController.goTo(route: String) {
 
 private fun todayWorkoutOrRest(dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek): String {
     val workout = PlanContent.workoutFor(dayOfWeek)
-    if (workout != null) {
-        return "${workout.title}: ${workout.focus}"
-    }
-
+    if (workout != null) return "${workout.title}: ${workout.focus}"
     return when (dayOfWeek) {
         DayOfWeek.MONDAY -> "Bike 15 min + caminhada 20 min. Sem ginasio, preparar a semana."
         DayOfWeek.SUNDAY -> "Descanso ativo, compras, meal prep e caminhada leve opcional."
@@ -788,20 +1334,8 @@ private fun todayWorkoutOrRest(dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek)
     }
 }
 
-private fun todayDrinkRotation(dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek): Recipe {
-    return PlanContent.drinkFor(dayOfWeek)
-}
-
-private fun ProgressState.completionCountFor(ids: List<String>): Int {
-    return ids.count { completedIds.contains(it) }
-}
-
-private fun progressPercent(completed: Int, total: Int): Int {
-    if (total <= 0) {
-        return 0
-    }
-    return (completed * 100) / total
-}
+private fun ProgressState.completionCountFor(ids: List<String>): Int =
+    ids.count { completedIds.contains(it) }
 
 private fun DayOfWeek.portugueseName(): String = when (this) {
     DayOfWeek.MONDAY -> "Segunda"
@@ -811,4 +1345,14 @@ private fun DayOfWeek.portugueseName(): String = when (this) {
     DayOfWeek.FRIDAY -> "Sexta"
     DayOfWeek.SATURDAY -> "Sabado"
     DayOfWeek.SUNDAY -> "Domingo"
+}
+
+private fun DayOfWeek.shortLabel(): String = when (this) {
+    DayOfWeek.MONDAY -> "Seg"
+    DayOfWeek.TUESDAY -> "Ter"
+    DayOfWeek.WEDNESDAY -> "Qua"
+    DayOfWeek.THURSDAY -> "Qui"
+    DayOfWeek.FRIDAY -> "Sex"
+    DayOfWeek.SATURDAY -> "Sab"
+    DayOfWeek.SUNDAY -> "Dom"
 }
