@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meal Prep Workout</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e4ece8;color:#172b23;font:16px system-ui}main{max-width:430px;margin:auto;min-height:100dvh;background:#f7faf8;padding:24px 18px}header{background:#163c30;color:white;border-radius:24px;padding:24px}h1,h2{margin:8px 0}p{line-height:1.55}nav{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:18px 0}button{font:inherit;cursor:pointer;min-height:48px;border:0;border-radius:12px;background:#e2eee7;color:inherit;padding:6px}button[aria-pressed=true]{background:#164f3b;color:white}article{background:white;border:1px solid #dce7df;border-radius:18px;padding:18px}label{display:flex;align-items:center;gap:10px;min-height:48px}input{accent-color:#164f3b}footer{font-size:.875rem;color:#41584e}button:focus-visible,input:focus-visible{outline:3px solid #31856b;outline-offset:2px}
+</style>
+<main>
+<header><small>INTERACTIVE PORTFOLIO DEMO</small><h1>Meal Prep Workout</h1><p>A weekly routine for workouts, meals and groceries.</p></header>
+<nav aria-label="Demo screens"></nav>
+<article aria-labelledby="screen"></article>
+<footer><p>This browser demo uses sample data and keeps checkmarks for the current session. It illustrates the Android workflow and does not sync with the app.</p></footer>
+</main>
+<script>
+const screens = {
+  Today: ['Start with the essentials for today.', ['Pack a water bottle', 'Complete the planned workout or walk', 'Prepare tomorrow’s lunch']],
+  Workout: ['Sample session: full body. Start with a warm-up and choose a comfortable load.', ['Goblet squat', 'Dumbbell bench press', 'One-arm dumbbell row']],
+  Meals: ['Sample prep: Greek chicken pasta salad with cucumber, tomato and lemon.', ['Cook the pasta', 'Prepare the chicken and vegetables', 'Pack lunch portions']],
+  Shopping: ['Pick up ingredients for the sample prep plan.', ['Chicken breast', 'Pasta', 'Cucumber and tomatoes', 'Lemon']],
+  Progress: ['Review your weekly routine.', ['Record measurements', 'Finish meal prep', 'Review the next week']]
+};
+const nav = document.querySelector('nav');
+const panel = document.querySelector('article');
+const checked = new Set();
+function show(screen) {
+  const [description, tasks] = screens[screen];
+  const title = document.createElement('h2');
+  title.id = 'screen';
+  title.textContent = screen;
+  const summary = document.createElement('p');
+  summary.textContent = description;
+  panel.replaceChildren(title, summary);
+  for (const task of tasks) {
+    const key = screen + ':' + task;
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = checked.has(key);
+    input.addEventListener('change', () => {
+      if (input.checked) checked.add(key);
+      else checked.delete(key);
+    });
+    label.append(input, task);
+    panel.append(label);
+  }
+  for (const button of nav.children) button.setAttribute('aria-pressed', button.textContent === screen);
+}
+for (const screen of Object.keys(screens)) {
+  const button = document.createElement('button');
+  button.textContent = screen;
+  button.addEventListener('click', () => show(screen));
+  nav.append(button);
+}
+show('Today');
+</script>
+</html>
