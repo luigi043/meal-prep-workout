@@ -413,7 +413,7 @@ private fun DashboardScreen(
             ) {
                 BulletLine("Creatine", "The sample plan schedules creatine with breakfast or after a workout.")
                 BulletLine("Whey", "The sample plan lists whey as an optional snack or after a workout.")
-                BulletLine("Note", "Creatine pode subir peso por agua no musculo; isso nao e gordura.")
+                BulletLine("Note", "Creatine can affect water weight.")
             }
         }
     }
@@ -563,7 +563,7 @@ private fun WorkoutDetailCard(
 }
 
 // ----------------------------------------------------------------------------
-// Meals (with Refeicoes / Bebidas tabs)
+// Meals and drinks
 // ----------------------------------------------------------------------------
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -9,28 +9,28 @@ object PlanContent {
     )
 
     val dashboardTasks = listOf(
-        ChecklistTask("daily_water", "Agua do dia", "Levar 1 L para o trabalho e beber ao longo do dia."),
-        ChecklistTask("daily_workout", "Treino ou caminhada", "Cumprir o movimento planeado para hoje."),
-        ChecklistTask("daily_sleep", "Sono 22:10", "Entrar na cama as 22:00, luzes apagadas as 22:10."),
-        ChecklistTask("daily_protein", "Proteina", "Bater 165-180 g/dia usando comida e whey se precisar.")
+        ChecklistTask("daily_water", "Daily water", "Bring a 1 L bottle and sip throughout the day."),
+        ChecklistTask("daily_workout", "Workout or walk", "Complete today's planned activity."),
+        ChecklistTask("daily_sleep", "Bedtime at 22:10", "Get ready for bed at 22:00 and turn off the lights at 22:10."),
+        ChecklistTask("daily_protein", "Protein", "Sample plan target: 165–180 g daily from food and optional whey.")
     )
 
     val weeklySchedule = listOf(
-        "Segunda: 15 min bicicleta + 20 min caminhada. Sem ginasio. Preparar a semana.",
-        "Terca: 10 min bicicleta leve + 10-15 min caminhada. Ginasio Push + Abs as 18:15.",
-        "Quarta: 10 min bicicleta leve + 10-15 min caminhada. Ginasio Pull + Bike as 18:15.",
-        "Quinta: 10 min bicicleta leve + 10-15 min caminhada. Ginasio Legs + Core as 18:15.",
-        "Sexta: 10 min bicicleta leve + 10-15 min caminhada. Ginasio Upper + Arms as 18:15.",
-        "Sabado: 10 min bicicleta leve + 10 min caminhada. Ginasio Full Body Today as 18:15.",
-        "Domingo: descanso ativo, prep, compras, bebidas e caminhada leve opcional."
+        "Monday: Cycle for 15 minutes and walk for 20 minutes. Use the rest day to prepare for the week.",
+        "Tuesday: 10 minutes of easy cycling and a 10–15 minute walk. Push and abs at 18:15.",
+        "Wednesday: 10 minutes of easy cycling and a 10–15 minute walk. Pull and cycling at 18:15.",
+        "Thursday: 10 minutes of easy cycling and a 10–15 minute walk. Legs and core at 18:15.",
+        "Friday: 10 minutes of easy cycling and a 10–15 minute walk. Upper body and arms at 18:15.",
+        "Saturday: 10 minutes of easy cycling and a 10-minute walk. Full body at 18:15.",
+        "Sunday: Active recovery, meal prep, shopping, drinks and an optional easy walk."
     )
 
     val sleepPlan = listOf(
-        "21:30 - banho, comida de amanha e mochila do ginasio.",
-        "21:45 - sem ecra forte e sem cafeina.",
-        "22:00 - cama.",
-        "22:10 - dormir.",
-        "05:55 - acordar."
+        "21:30: Shower and prepare tomorrow's food and gym bag.",
+        "21:45: Avoid bright screens and caffeine.",
+        "22:00: Get into bed.",
+        "22:10: Lights out.",
+        "05:55: Wake up."
     )
 
     val meals = listOf(
@@ -38,63 +38,63 @@ object PlanContent {
             day = "Monday",
             title = "Greek chicken pasta salad",
             meals = listOf(
-                MealItem("7:10", "Aveia proteica fria", "60 g aveia + 200 g iogurte grego + maca + canela. Creatina aqui.", "40-55 g proteina"),
-                MealItem("13:00", "Salada de massa tipo Greek chicken", "80 g massa seca cozida + 170 g peito de frango + pepino + tomate + espinafres + menta + limao.", "~620 kcal"),
-                MealItem("19:15", "Peru em tomate + massa pequena", "180-200 g peru + molho tomate caseiro + legumes + 60 g massa seca cozida.")
+                MealItem("7:10", "Chilled high-protein oats", "60 g oats, 200 g Greek yogurt, apple and cinnamon. The sample schedule pairs this with creatine.", "40–55 g protein"),
+                MealItem("13:00", "Greek chicken pasta salad", "80 g pasta (dry weight, then cooked), 170 g chicken breast, cucumber, tomato, spinach, mint and lemon.", "~620 kcal"),
+                MealItem("19:15", "Turkey in tomato sauce with a small serving of pasta", "180–200 g turkey, homemade tomato sauce, vegetables and 60 g pasta (dry weight, then cooked).")
             )
         ),
         MealDay(
             day = "Tuesday",
-            title = "Atum e grao",
+            title = "Tuna and chickpeas",
             meals = listOf(
-                MealItem("7:10", "Ovos + pao + tomate", "3 ovos + 2 fatias pao + tomate/espinafres."),
-                MealItem("13:00", "Salada de massa, atum e grao", "75 g massa seca cozida + atum + 100 g grao + pepino + cebola roxa + limao + salsa/menta.", "~45 g proteina"),
-                MealItem("20:00", "Frango tomate-paprika", "200 g frango freezer + legumes + 60-70 g massa seca cozida.")
+                MealItem("7:10", "Eggs, bread and tomato", "3 eggs, 2 slices of bread, and tomato or spinach."),
+                MealItem("13:00", "Tuna and chickpea pasta salad", "75 g pasta (dry weight, then cooked), tuna, 100 g chickpeas, cucumber, red onion, lemon and parsley or mint.", "About 45 g protein"),
+                MealItem("20:00", "Tomato and paprika chicken", "200 g prepped chicken, vegetables and 60–70 g pasta (dry weight, then cooked).")
             )
         ),
         MealDay(
             day = "Wednesday",
-            title = "Frango mediterranico",
+            title = "Mediterranean chicken",
             meals = listOf(
-                MealItem("7:10", "Batido verde + ovos", "Batido detox verde + 2 ovos cozidos + 1 fatia pao."),
-                MealItem("13:00", "Salada mediterranica com frango", "80 g massa seca cozida + 170 g frango limao-alho + tomate + pepino + folhas verdes."),
-                MealItem("20:00", "Sopa de lentilhas + sardinhas", "Sopa grossa + 1 lata sardinhas escorrida + salada.")
+                MealItem("7:10", "Green smoothie and eggs", "Green smoothie, 2 boiled eggs and 1 slice of bread."),
+                MealItem("13:00", "Mediterranean chicken salad", "80 g pasta (dry weight, then cooked), 170 g lemon and garlic chicken, tomato, cucumber and leafy greens."),
+                MealItem("20:00", "Lentil soup and sardines", "Thick lentil soup, 1 drained can of sardines and a salad.")
             )
         ),
         MealDay(
             day = "Thursday",
-            title = "Peru e tomate",
+            title = "Turkey and tomato",
             meals = listOf(
-                MealItem("7:10", "Iogurte + aveia", "250 g iogurte grego + 50 g aveia + banana pequena + canela."),
-                MealItem("13:00", "Salada de massa com peru", "75 g massa seca cozida + 180 g peru + molho tomate + pepino + espinafres."),
-                MealItem("20:00", "Frango soy-gengibre", "200 g frango + brocolo/pimentos/courgette + 60-70 g massa seca cozida.")
+                MealItem("7:10", "Yogurt and oats", "250 g Greek yogurt, 50 g oats, a small banana and cinnamon."),
+                MealItem("13:00", "Turkey pasta salad", "75 g pasta (dry weight, then cooked), 180 g turkey, tomato sauce, cucumber and spinach."),
+                MealItem("20:00", "Soy and ginger chicken", "200 g chicken, broccoli, peppers or zucchini, and 60–70 g pasta (dry weight, then cooked).")
             )
         ),
         MealDay(
             day = "Friday",
-            title = "Pizza chicken controlada",
+            title = "Pizza chicken",
             meals = listOf(
-                MealItem("7:10", "Batido verde + aveia proteica", "Batido verde + 50 g aveia com iogurte ou whey."),
-                MealItem("13:00", "Salada de massa com sardinha", "70 g massa seca cozida + sardinhas escorridas + tomate + pepino + cebola + limao."),
-                MealItem("20:00", "Pizza chicken + salada", "Peito de frango com molho tomate/pizza, queijo controlado e oregano. Salada grande ao lado.")
+                MealItem("7:10", "Green smoothie and high-protein oats", "Green smoothie and 50 g oats with yogurt or whey."),
+                MealItem("13:00", "Sardine pasta salad", "70 g pasta (dry weight, then cooked), drained sardines, tomato, cucumber, onion and lemon."),
+                MealItem("20:00", "Pizza chicken and salad", "Chicken breast with tomato or pizza sauce, a measured portion of cheese and oregano. Serve with a large salad.")
             )
         ),
         MealDay(
             day = "Saturday",
-            title = "Frango e grao",
+            title = "Chicken and chickpeas",
             meals = listOf(
-                MealItem("7:10", "Ovos + pao + fruta", "3 ovos + 1-2 fatias pao + 1 fruta."),
-                MealItem("13:00", "Salada de massa com frango e grao", "80 g massa seca cozida + 150 g frango + 80 g grao + pepino + tomate + menta."),
-                MealItem("20:00", "Frango limao-alho", "200 g frango + legumes + 60-70 g massa seca cozida ou batata.")
+                MealItem("7:10", "Eggs, bread and fruit", "3 eggs, 1–2 slices of bread and a piece of fruit."),
+                MealItem("13:00", "Chicken and chickpea pasta salad", "80 g pasta (dry weight, then cooked), 150 g chicken, 80 g chickpeas, cucumber, tomato and mint."),
+                MealItem("20:00", "Lemon and garlic chicken", "200 g chicken, vegetables, and 60–70 g pasta (dry weight, then cooked) or potatoes.")
             )
         ),
         MealDay(
             day = "Sunday",
-            title = "Reset e prep",
+            title = "Weekly reset and prep",
             meals = listOf(
-                MealItem("Manha", "Batido verde + proteina", "Batido detox verde e depois ovos, iogurte ou frango."),
-                MealItem("Almoco", "Pizza planeada ou prato T", "Tortilla pizza ou 2 fatias pan pizza + salada + frango/atum."),
-                MealItem("Tarde", "Prep", "Cozinhar frango, massa, legumes, caixas e bebidas.")
+                MealItem("Morning", "Green smoothie and a protein side", "Green smoothie with eggs, yogurt or chicken on the side."),
+                MealItem("Lunch", "Planned pizza or a salad plate", "Tortilla pizza or two slices of pan pizza, with salad and chicken or tuna."),
+                MealItem("Afternoon", "Meal prep", "Cook the chicken, pasta and vegetables. Pack the meals and prepare the drinks.")
             )
         )
     )
@@ -102,70 +102,70 @@ object PlanContent {
     val drinks = listOf(
         Recipe(
             id = "drink_cucumber_mint",
-            title = "Agua com pepino e menta",
-            timing = "O dia todo - prepara na noite anterior - 0 kcal",
-            ingredients = "1/2 pepino fatiado fino - 10-12 folhas menta - 1 L agua fria - 1/2 limao opcional",
+            title = "Cucumber and mint water",
+            timing = "Prepare the night before and sip throughout the day",
+            ingredients = "Half a cucumber, thinly sliced, 10–12 mint leaves, 1 L cold water and half a lemon (optional)",
             steps = listOf(
-                "Corta o pepino fino. Nao e preciso descascar.",
-                "Esmaga as folhas de menta nas palmas das maos.",
-                "Coloca pepino e menta numa garrafa de 1 L.",
-                "Enche de agua fria e fecha.",
-                "Frigorifico durante a noite, minimo 4 horas."
+                "Thinly slice the cucumber. Peeling is optional.",
+                "Crush the mint leaves gently between your palms.",
+                "Add the cucumber and mint to a 1 L bottle.",
+                "Fill with cold water and close the bottle.",
+                "Refrigerate overnight, or for at least four hours."
             ),
-            note = "Substitui sumos e facilita beber agua."
+            note = "Serve chilled as an alternative to juice."
         ),
         Recipe(
             id = "drink_lime_mint",
-            title = "Agua lima + menta",
-            timing = "Alternar nos dias de ginasio - 0 kcal",
-            ingredients = "1/2 lima fatiada - 10 folhas menta - 1 L agua fria - gelo opcional",
+            title = "Lime and mint water",
+            timing = "An option for workout days",
+            ingredients = "Half a sliced lime, 10 mint leaves, 1 L cold water and ice (optional)",
             steps = listOf(
-                "Fatia a lima fina.",
-                "Esmaga a menta nas palmas das maos.",
-                "Coloca tudo numa garrafa de 1 L com agua fria.",
-                "Frigorifico por 2-4 horas ou durante a noite."
+                "Thinly slice the lime.",
+                "Crush the mint gently between your palms.",
+                "Put the ingredients into a 1 L bottle and fill with cold water.",
+                "Refrigerate for two to four hours or overnight."
             ),
-            note = "Boa para terca, quinta e sabado. Usa menos lima se a acidez incomodar."
+            note = "The sample plan uses this on Tuesday, Thursday and Saturday. Use less lime for a milder flavor."
         ),
         Recipe(
             id = "drink_strawberry_lime_mint",
-            title = "Agua morango + lima + menta",
-            timing = "Opcao mais doce sem acucar - 0 kcal",
-            ingredients = "5-6 morangos fatiados - 1/2 lima fatiada - 8-10 folhas menta - 1 L agua fria",
+            title = "Strawberry, lime and mint water",
+            timing = "Fruit-infused water with no added sugar",
+            ingredients = "5–6 sliced strawberries, half a sliced lime, 8–10 mint leaves and 1 L cold water",
             steps = listOf(
-                "Lava e fatia os morangos.",
-                "Fatia a lima fina.",
-                "Esmaga a menta nas palmas das maos.",
-                "Junta tudo numa garrafa de 1 L.",
-                "Frigorifico 2-4 horas antes de beber."
+                "Wash and slice the strawberries.",
+                "Thinly slice the lime.",
+                "Crush the mint gently between your palms.",
+                "Combine the ingredients in a 1 L bottle.",
+                "Refrigerate for two to four hours before serving."
             ),
-            note = "Usa ao domingo ou quando quiseres variedade com sabor mais fresco/doce."
+            note = "Serve on Sunday or whenever you want a fruitier drink."
         ),
         Recipe(
             id = "drink_green_detox",
-            title = "Batido detox verde",
-            timing = "Quarta, sexta e domingo - cerca de 80 kcal",
-            ingredients = "Espinafres - 1/2 pepino - maca verde - sumo 1/2 limao - gengibre - 250 ml agua",
+            title = "Green smoothie",
+            timing = "Wednesday, Friday and Sunday (about 80 kcal)",
+            ingredients = "Spinach, half a cucumber, a green apple, juice of half a lemon, ginger and 250 ml water",
             steps = listOf(
-                "Coloca primeiro a agua no liquidificador.",
-                "Junta espinafres, pepino, maca e gengibre.",
-                "Bate 60-90 segundos.",
-                "Adiciona limao e bate mais 10 segundos."
+                "Pour the water into the blender first.",
+                "Add the spinach, cucumber, apple and ginger.",
+                "Blend for 60–90 seconds.",
+                "Add lemon juice and blend for another 10 seconds."
             ),
-            note = "Nao substitui proteina no pequeno-almoco."
+            note = "Pair with the breakfast in the sample meal plan."
         ),
         Recipe(
             id = "drink_acv",
-            title = "Shot ACV diluido",
-            timing = "15-30 min antes do almoco",
-            ingredients = "1 col sopa vinagre de maca - 200 ml agua - canela opcional",
+            title = "Diluted apple cider vinegar",
+            timing = "Before lunch in the sample plan",
+            ingredients = "1 tablespoon apple cider vinegar, 200 ml water and cinnamon (optional)",
             steps = listOf(
-                "Coloca primeiro a agua no copo.",
-                "Adiciona o vinagre de maca.",
-                "Mexe com canela se quiseres.",
-                "Bebe com palhinha e passa a boca com agua."
+                "Pour the water into a glass first.",
+                "Add the apple cider vinegar.",
+                "Stir in cinnamon if desired.",
+                "Use a straw and rinse your mouth with water afterward."
             ),
-            note = "Nunca bebas vinagre puro."
+            note = "Always dilute the vinegar."
         )
     )
 
@@ -173,8 +173,8 @@ object PlanContent {
         Workout(
             id = "workout_tue",
             dayOfWeek = DayOfWeek.TUESDAY,
-            title = "Gym Workout - Terca",
-            focus = "Push + Abs - peito, ombros, triceps",
+            title = "Tuesday gym workout",
+            focus = "Push and abs: chest, shoulders and triceps",
             totalTime = "~80-90 min",
             sections = listOf(
                 WorkoutSection("Warm-Up - 10 min", "Treadmill", "5 min fast walk. Incline 5-8%. Speed comfortable pace."),
@@ -193,8 +193,8 @@ object PlanContent {
         Workout(
             id = "workout_wed",
             dayOfWeek = DayOfWeek.WEDNESDAY,
-            title = "Gym Workout - Quarta",
-            focus = "Pull + Bike - costas, biceps, posterior",
+            title = "Wednesday gym workout",
+            focus = "Pull and cycling: back, biceps and posterior chain",
             totalTime = "~75-85 min",
             sections = listOf(
                 WorkoutSection("Warm-Up - 10 min", "Bike", "5 min easy/moderate + 5 min shoulder/back mobility."),
@@ -212,8 +212,8 @@ object PlanContent {
         Workout(
             id = "workout_thu",
             dayOfWeek = DayOfWeek.THURSDAY,
-            title = "Gym Workout - Quinta",
-            focus = "Legs + Core - pernas, gluteos, posterior",
+            title = "Thursday gym workout",
+            focus = "Legs and core: legs, glutes and posterior chain",
             totalTime = "~80-90 min",
             sections = listOf(
                 WorkoutSection("Warm-Up - 10 min", "Bike", "5 min easy + 5 min lower-body mobility."),
@@ -231,8 +231,8 @@ object PlanContent {
         Workout(
             id = "workout_fri",
             dayOfWeek = DayOfWeek.FRIDAY,
-            title = "Gym Workout - Sexta",
-            focus = "Upper + Arms - ombros, peito/costas leve, bracos",
+            title = "Friday gym workout",
+            focus = "Upper body and arms: shoulders, light chest and back work, and arms",
             totalTime = "~70-80 min",
             sections = listOf(
                 WorkoutSection("Warm-Up - 10 min", "Treadmill", "5 min fast walk + 5 min shoulder mobility."),
@@ -251,8 +251,8 @@ object PlanContent {
         Workout(
             id = "workout_sat",
             dayOfWeek = DayOfWeek.SATURDAY,
-            title = "Gym Workout - Sabado",
-            focus = "Full Body Today - formato completo",
+            title = "Saturday gym workout",
+            focus = "Full-body session",
             totalTime = "~90 min",
             sections = listOf(
                 WorkoutSection("Warm-Up - 10 min", "Treadmill", "5 min fast walk. Incline 5-8%. Speed comfortable pace."),
@@ -272,48 +272,48 @@ object PlanContent {
     )
 
     val shopping = listOf(
-        ShoppingCategory("Proteinas", listOf(
-            task("shop_chicken", "Peito de frango ou coxas sem pele", "2 kg para congelar"),
-            task("shop_turkey", "Peru em cubos ou picado", "1 kg"),
-            task("shop_eggs", "Ovos classe L", "2 duzias"),
-            task("shop_yogurt", "Iogurte grego natural/0%", "2 potes grandes ou packs"),
-            task("shop_tuna", "Atum", "6-8 latas"),
-            task("shop_sardines", "Sardinhas", "4 latas")
+        ShoppingCategory("Protein", listOf(
+            task("shop_chicken", "Chicken breast or skinless thighs", "2 kg for freezing"),
+            task("shop_turkey", "Diced or ground turkey", "1 kg"),
+            task("shop_eggs", "Large eggs", "2 dozen"),
+            task("shop_yogurt", "Plain or nonfat Greek yogurt", "2 large tubs or packs"),
+            task("shop_tuna", "Tuna", "6–8 cans"),
+            task("shop_sardines", "Sardines", "4 cans")
         )),
-        ShoppingCategory("Massa e hidratos", listOf(
-            task("shop_pasta", "Massa integral fusilli/penne", "1.5 kg"),
-            task("shop_oats", "Aveia em flocos", "1 kg"),
-            task("shop_bread", "Pao integral", "Para pequeno-almoco e pre-treino"),
-            task("shop_wraps", "Wraps/tortilhas", "Para tortilla pizza"),
-            task("shop_chickpeas", "Grao-de-bico", "3 latas")
+        ShoppingCategory("Pasta and grains", listOf(
+            task("shop_pasta", "Whole-wheat fusilli or penne", "1.5 kg"),
+            task("shop_oats", "Rolled oats", "1 kg"),
+            task("shop_bread", "Whole-wheat bread", "For breakfast and pre-workout snacks"),
+            task("shop_wraps", "Wraps or tortillas", "For tortilla pizza"),
+            task("shop_chickpeas", "Chickpeas", "3 cans")
         )),
-        ShoppingCategory("Legumes e saladas", listOf(
-            task("shop_cucumber", "Pepino", "5-6 unidades"),
-            task("shop_mint", "Menta/hortela fresca", "2 ramos"),
-            task("shop_spinach", "Espinafres", "Saco grande"),
-            task("shop_tomato", "Tomate", "Cereja ou normal"),
-            task("shop_broccoli", "Brocolo", "Para jantar pos-treino")
+        ShoppingCategory("Vegetables and greens", listOf(
+            task("shop_cucumber", "Cucumber", "5–6 cucumbers"),
+            task("shop_mint", "Fresh mint", "2 bunches"),
+            task("shop_spinach", "Spinach", "Large bag"),
+            task("shop_tomato", "Tomatoes", "Cherry or regular"),
+            task("shop_broccoli", "Broccoli", "For dinner after a workout")
         )),
-        ShoppingCategory("Fruta e bebidas", listOf(
-            task("shop_lemons", "Limoes", "12"),
-            task("shop_limes", "Limas", "4"),
-            task("shop_strawberries", "Morangos", "Para agua morango+lima+menta"),
-            task("shop_ginger", "Gengibre fresco", "Raiz grande"),
-            task("shop_apples", "Macas", "Verdes/vermelhas"),
-            task("shop_bananas", "Bananas", "Pre-treino")
+        ShoppingCategory("Fruit and drinks", listOf(
+            task("shop_lemons", "Lemons", "12"),
+            task("shop_limes", "Limes", "4"),
+            task("shop_strawberries", "Strawberries", "For strawberry, lime and mint water"),
+            task("shop_ginger", "Fresh ginger", "Large root"),
+            task("shop_apples", "Apples", "Green or red"),
+            task("shop_bananas", "Bananas", "Pre-workout snack")
         )),
-        ShoppingCategory("Molhos e suplementos", listOf(
-            task("shop_acv", "Vinagre de maca cru nao filtrado", "Com a mae"),
-            task("shop_pizza_sauce", "Molho tomate/pizza", "Pizza chicken e tortilla pizza"),
-            task("shop_mozzarella", "Mozzarella/queijo ralado", "Porcao controlada"),
-            task("shop_whey", "Whey", "Neutra ou baunilha"),
-            task("shop_creatine", "Creatina monohidratada", "5 g por dia")
+        ShoppingCategory("Sauces and supplements", listOf(
+            task("shop_acv", "Raw unfiltered apple cider vinegar", "With the mother"),
+            task("shop_pizza_sauce", "Tomato or pizza sauce", "For pizza chicken and tortilla pizza"),
+            task("shop_mozzarella", "Mozzarella or grated cheese", "Use a measured portion"),
+            task("shop_whey", "Whey", "Plain or vanilla"),
+            task("shop_creatine", "Creatine monohydrate", "Sample plan: 5 g daily")
         )),
         ShoppingCategory("Meal prep tools", listOf(
-            task("shop_bottles", "Garrafas 1 L", "Pepino/menta e lima/menta"),
-            task("shop_boxes", "Caixas meal prep", "Para pasta salads"),
-            task("shop_freezer_bags", "Sacos/caixas de congelacao", "Para frango"),
-            task("shop_straws", "Palhinhas", "Para ACV")
+            task("shop_bottles", "1 L bottles", "For cucumber and mint or lime and mint water"),
+            task("shop_boxes", "Meal prep containers", "For pasta salads"),
+            task("shop_freezer_bags", "Freezer bags or containers", "For chicken"),
+            task("shop_straws", "Straws", "For diluted apple cider vinegar")
         ))
     )
 
@@ -321,9 +321,9 @@ object PlanContent {
         "Budget Bytes" to "https://www.budgetbytes.com/",
         "MuscleWiki" to "https://musclewiki.com/",
         "Workout.lol" to "https://workout.lol/",
-        "CDC sono" to "https://www.cdc.gov/sleep/about/index.html",
-        "ISSN creatina" to "https://jissn.biomedcentral.com/articles/10.1186/s12970-017-0173-z",
-        "ISSN proteina" to "https://jissn.biomedcentral.com/articles/10.1186/s12970-017-0177-8"
+        "CDC sleep" to "https://www.cdc.gov/sleep/about/index.html",
+        "ISSN creatine" to "https://jissn.biomedcentral.com/articles/10.1186/s12970-017-0173-z",
+        "ISSN protein" to "https://jissn.biomedcentral.com/articles/10.1186/s12970-017-0177-8"
     )
 
     fun workoutFor(dayOfWeek: DayOfWeek): Workout? = workouts.firstOrNull { it.dayOfWeek == dayOfWeek }
