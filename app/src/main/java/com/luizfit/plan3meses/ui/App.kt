@@ -784,6 +784,9 @@ private fun ProgressScreen(
     onWeightChange: (String) -> Unit,
     onAbdomenChange: (String) -> Unit
 ) {
+    // Keep edits synchronous so a delayed DataStore emission cannot move the cursor.
+    var weightDraft by rememberSaveable { mutableStateOf<String?>(null) }
+    var waistDraft by rememberSaveable { mutableStateOf<String?>(null) }
     ScreenColumn {
         item {
             SectionHeader(
@@ -801,8 +804,11 @@ private fun ProgressScreen(
                 icon = Icons.Outlined.Straighten
             ) {
                 OutlinedTextField(
-                    value = progress.weeklyWeight,
-                    onValueChange = onWeightChange,
+                    value = weightDraft ?: progress.weeklyWeight,
+                    onValueChange = { value ->
+                        weightDraft = value
+                        onWeightChange(value)
+                    },
                     label = { Text("Current weight") },
                     suffix = { Text("kg") },
                     singleLine = true,
@@ -812,8 +818,11 @@ private fun ProgressScreen(
                 )
                 Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = progress.weeklyAbdomen,
-                    onValueChange = onAbdomenChange,
+                    value = waistDraft ?: progress.weeklyAbdomen,
+                    onValueChange = { value ->
+                        waistDraft = value
+                        onAbdomenChange(value)
+                    },
                     label = { Text("Waist") },
                     suffix = { Text("cm") },
                     singleLine = true,
