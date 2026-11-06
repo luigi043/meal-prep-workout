@@ -20,7 +20,12 @@ The APK installed on an Android API 35 emulator (1080 × 2340). The screenshots 
 | [12 Grocery item checked](12-shopping-item-checked.png) | Check the chicken item | The total changed to 1 of 31 and Protein changed to 1 of 6. |
 | [13 Drink prepared](13-drink-prepared.png) | Select **Mark prepared** | The recipe changed to **Prepared**. The shortcut from Today also opened Drinks with the preparation state retained. |
 | [14 Measurement input before the fix](14-measurements-before-fix.png) | Type the synthetic values 80.5 and 85 quickly in the earlier build | The fields recorded 0.58 and 58. The subsequent change keeps the field draft synchronous while DataStore persists edits. |
+| [15 Timeout after rebuild](15-timeout-after-rebuild.png) | Launch the APK containing the input fix | The APK installed and rendered Welcome. The recurring timeout blocked the rapid input and relaunch retest. |
 
 On the retry after compiling only this app's installed bytecode for speed, **Open plan** reached Today once the welcome screen had finished drawing. The first-launch timeout remains an open verification issue. The on-device clock was kept unchanged. Daily rollover was covered by the JVM test.
 
 The standalone browser demo is a separate simulation with synthetic data. See [public demo verification](PUBLIC-DEMO.md).
+
+The rebuilt APK from commit `4a08df6` passed `gradlew.bat --offline assembleDebug testDebugUnitTest` and installed successfully. The seven-view walkthrough used the preceding build. Repeat rapid entry of 80.5 and 85 on a responsive Android environment and confirm the values on Today and after relaunch.
+
+The local copy is `meal-prep-workout-debug.apk` in this folder. Its SHA-256 is `8a89efcf813677725f93b4336ada78f5b4b17d25414008bc26b686fe95fe1392`.
