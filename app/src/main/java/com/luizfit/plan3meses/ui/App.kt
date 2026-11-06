@@ -266,7 +266,7 @@ private fun WelcomeScreen(
         ) {
             Image(
                 painter = painterResource(R.drawable.logoapp),
-                contentDescription = "Logo Plano 3 Meses",
+                contentDescription = "Meal Prep Workout logo",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
@@ -281,7 +281,7 @@ private fun WelcomeScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                "Treino, refeicoes, bebidas e progresso. Sem complicar.",
+                "Workouts, meals, drinks and progress in one place.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -313,7 +313,7 @@ private fun WelcomeScreen(
                     Text(today.englishName(), style = MaterialTheme.typography.labelLarge)
                     Text("Today's plan", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "$dailyCompleted de ${dailyIds.size} tarefas",
+                        "$dailyCompleted of ${dailyIds.size} tasks",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -392,24 +392,24 @@ private fun DashboardScreen(
         }
         item {
             SectionCard(
-                title = "Sono",
-                subtitle = "Prioridade para perder gordura e recuperar",
+                title = "Sleep",
+                subtitle = "Make time to rest and recover",
                 icon = Icons.Outlined.Bedtime
             ) {
-                BulletLine("22:00", "Cama, luzes apagadas.")
-                BulletLine("22:10", "Dormir.")
-                BulletLine("05:55", "Acordar.")
+                BulletLine("22:00", "Get ready for bed.")
+                BulletLine("22:10", "Lights out.")
+                BulletLine("05:55", "Wake up.")
             }
         }
         item {
             SectionCard(
-                title = "Suplementacao",
-                subtitle = "Simples e consistente",
+                title = "Supplements",
+                subtitle = "Notes from the plan",
                 icon = Icons.Outlined.Bolt
             ) {
-                BulletLine("Creatina", "5 g/dia ao pequeno-almoco. Nos dias de ginasio tambem pode ser pos-treino.")
-                BulletLine("Whey", "1 scoop quando faltar proteina. Boa as 16:00 ou pos-treino.")
-                BulletLine("Nota", "Creatina pode subir peso por agua no musculo; isso nao e gordura.")
+                BulletLine("Creatine", "The sample plan schedules creatine with breakfast or after a workout.")
+                BulletLine("Whey", "The sample plan lists whey as an optional snack or after a workout.")
+                BulletLine("Note", "Creatine pode subir peso por agua no musculo; isso nao e gordura.")
             }
         }
     }
@@ -434,7 +434,7 @@ private fun WorkoutScreen(
         item {
             SectionHeader(
                 title = "Workout",
-                subtitle = "Terca a sabado as 18:15"
+                subtitle = "Tuesday through Saturday at 18:15"
             )
         }
         item {
@@ -452,8 +452,8 @@ private fun WorkoutScreen(
         }
         item {
             SectionCard(
-                title = "Links uteis",
-                subtitle = "Tecnica primeiro, carga depois",
+                title = "Exercise references",
+                subtitle = "Practice form before adding weight",
                 icon = Icons.Outlined.FitnessCenter
             ) {
                 LinkRow("MuscleWiki", "https://musclewiki.com/", uriHandler::openUri)
@@ -591,20 +591,20 @@ private fun MealsScreen(
                 item {
                     SectionHeader(
                         title = "Meals",
-                        subtitle = "Pasta salads, frango, pizza controlada"
+                        subtitle = "Pasta salads, chicken and pizza options"
                     )
                 }
                 item {
                     SectionCard(
-                        title = "Budget Bytes adaptado",
-                        subtitle = "Inspiracao com porcoes do teu plano",
+                        title = "Adapted from Budget Bytes",
+                        subtitle = "Recipe ideas and portions from the sample plan",
                         icon = Icons.Outlined.Restaurant
                     ) {
                         LinkRow("Budget Bytes", "https://www.budgetbytes.com/", uriHandler::openUri)
                         LinkRow("Greek chicken pasta salad", "https://www.budgetbytes.com/greek-chicken-pasta-salad/", uriHandler::openUri)
                         LinkRow("Pizza chicken", "https://www.budgetbytes.com/baked-pizza-chicken/", uriHandler::openUri)
-                        BulletLine("Porcao de massa", "70-90 g seca por refeicao principal, ou 180-240 g cozida.")
-                        BulletLine("Pizza", "1x/semana: pizza chicken, tortilla pizza ou 2 fatias pan pizza + salada.")
+                        BulletLine("Pasta portion", "70–90 g dry pasta per main meal, or 180–240 g cooked.")
+                        BulletLine("Pizza", "Weekly options include pizza chicken, tortilla pizza, or two slices of pan pizza with salad.")
                     }
                 }
                 items(PlanContent.meals) { mealDay ->
@@ -615,7 +615,7 @@ private fun MealsScreen(
                 item {
                     SectionHeader(
                         title = "Drinks",
-                        subtitle = "Hidratacao com variety, 0 kcal liquidas"
+                        subtitle = "Drink ideas for the week"
                     )
                 }
                 items(PlanContent.drinks) { recipe ->
@@ -675,11 +675,11 @@ private fun RecipeCard(
         ) {
             Text(if (checked) "Prepared" else "Mark prepared")
         }
-        BulletLine("Ingredientes", recipe.ingredients)
+        BulletLine("Ingredients", recipe.ingredients)
         recipe.steps.forEachIndexed { index, step ->
             BulletLine("${index + 1}", step)
         }
-        BulletLine("Nota", recipe.note)
+        BulletLine("Note", recipe.note)
     }
 }
 
@@ -699,13 +699,13 @@ private fun ShoppingScreen(
         item {
             SectionHeader(
                 title = "Shopping",
-                subtitle = "Toca para marcar comprado"
+                subtitle = "Expand a category and check off purchases"
             )
         }
         item {
             ProgressBarCard(
-                title = "$done de ${allItems.size} itens",
-                subtitle = "Lista para a semana",
+                title = "$done of ${allItems.size} items",
+                subtitle = "Weekly shopping list",
                 fraction = if (allItems.isEmpty()) 0f else done.toFloat() / allItems.size
             )
         }
@@ -753,7 +753,7 @@ private fun ExpandableCategoryCard(
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(
                         if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                        contentDescription = if (expanded) "Fechar" else "Abrir"
+                        contentDescription = if (expanded) "Collapse" else "Expand"
                     )
                 }
             }
@@ -783,7 +783,7 @@ private fun ProgressScreen(
         item {
             SectionHeader(
                 title = "Progress",
-                subtitle = "Peso, abdomen e check semanal"
+                subtitle = "Measurements and weekly checklist"
             )
         }
         item {
@@ -792,7 +792,7 @@ private fun ProgressScreen(
         item {
             SectionCard(
                 title = "Weekly measurements",
-                subtitle = "Regista 1x por semana, de manha",
+                subtitle = "Record your latest measurements",
                 icon = Icons.Outlined.Straighten
             ) {
                 OutlinedTextField(
@@ -821,14 +821,14 @@ private fun ProgressScreen(
         item {
             SectionCard(
                 title = "Weekly checklist",
-                subtitle = "Marca quando estiver feito",
+                subtitle = "Check off each finished task",
                 icon = Icons.Outlined.TrendingUp
             ) {
                 val weeklyTasks = listOf(
-                    ChecklistTask("week_weight", "Peso registado", "1x por semana, mesma hora."),
-                    ChecklistTask("week_abdomen", "Abdomen medido", "Fita no mesmo ponto."),
-                    ChecklistTask("week_meal_prep", "Meal prep feito", "Frango, massa, legumes e bebidas."),
-                    ChecklistTask("week_shopping", "Compras feitas", "Lista completa para a semana.")
+                    ChecklistTask("week_weight", "Weight recorded", "Once a week at the same time."),
+                    ChecklistTask("week_abdomen", "Waist measured", "Place the tape at the same point each time."),
+                    ChecklistTask("week_meal_prep", "Meal prep complete", "Chicken, pasta, vegetables and drinks."),
+                    ChecklistTask("week_shopping", "Shopping complete", "Finish the weekly shopping list.")
                 )
                 weeklyTasks.forEach { task ->
                     CheckTaskRow(task, progress.completedIds.contains(task.id), onToggle)
@@ -837,22 +837,22 @@ private fun ProgressScreen(
         }
         item {
             SectionCard(
-                title = "Rotina semanal",
-                subtitle = "Trabalho 8:00-17:00, ginasio terca a sabado",
+                title = "Weekly routine",
+                subtitle = "Sample work and gym schedule",
                 icon = Icons.Outlined.TrendingUp
             ) {
-                PlanContent.weeklySchedule.forEach { BulletLine("Dia", it) }
+                PlanContent.weeklySchedule.forEach { BulletLine("Day", it) }
             }
         }
         item {
             SectionCard(
-                title = "Alvo 3 meses",
-                subtitle = "Realista, sem milagres",
+                title = "12-week review",
+                subtitle = "Review your habits and measurements",
                 icon = Icons.Outlined.TrendingUp
             ) {
-                BulletLine("Peso", "-6 a -10 kg se a consistencia estiver boa.")
-                BulletLine("Waist", "-6 a -10 cm e roupa mais solta.")
-                BulletLine("Abs", "Definicao forte pode precisar de mais tempo. A base comeca agora.")
+                BulletLine("Weight", "Compare your latest measurements over time.")
+                BulletLine("Waist", "Record your waist using the same method.")
+                BulletLine("Abs", "Review which habits you can keep up.")
             }
         }
     }
@@ -890,7 +890,7 @@ private fun HeroGreeting(dayName: String, completed: Int, total: Int) {
                 Text("Welcome back", style = MaterialTheme.typography.titleMedium)
                 Text(dayName, style = MaterialTheme.typography.headlineMedium)
                 Text(
-                    "$completed/$total tarefas hoje",
+                    "$completed/$total tasks today",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
                 )
@@ -1043,7 +1043,7 @@ private fun DrinkSuggestionCard(drink: Recipe, onOpen: () -> Unit) {
                 )
             }
             IconButton(onClick = onOpen) {
-                Icon(Icons.Filled.ArrowOutward, contentDescription = "Abrir bebidas")
+                Icon(Icons.Filled.ArrowOutward, contentDescription = "Open drinks")
             }
         }
     }
@@ -1052,8 +1052,8 @@ private fun DrinkSuggestionCard(drink: Recipe, onOpen: () -> Unit) {
 @Composable
 private fun MetricGrid() {
     SectionCard(
-        title = "Perfil atual",
-        subtitle = "Da consulta e metas",
+        title = "Example measurements",
+        subtitle = "Sample values only",
         icon = Icons.Outlined.TrendingUp
     ) {
         PlanContent.metrics.chunked(2).forEach { row ->
@@ -1330,9 +1330,9 @@ private fun todayWorkoutOrRest(dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek)
     val workout = PlanContent.workoutFor(dayOfWeek)
     if (workout != null) return "${workout.title}: ${workout.focus}"
     return when (dayOfWeek) {
-        DayOfWeek.MONDAY -> "Bike 15 min + caminhada 20 min. Sem ginasio, preparar a semana."
-        DayOfWeek.SUNDAY -> "Descanso ativo, compras, meal prep e caminhada leve opcional."
-        else -> "Movimento leve e recuperacao."
+        DayOfWeek.MONDAY -> "Cycle for 15 minutes and walk for 20 minutes. Use the rest day to prepare for the week."
+        DayOfWeek.SUNDAY -> "Active recovery, shopping, meal prep and an optional easy walk."
+        else -> "Light movement and recovery."
     }
 }
 
@@ -1356,5 +1356,5 @@ private fun DayOfWeek.shortLabel(): String = when (this) {
     DayOfWeek.THURSDAY -> "Thu"
     DayOfWeek.FRIDAY -> "Fri"
     DayOfWeek.SATURDAY -> "Sat"
-    DayOfWeek.SUNDAY -> "Dom"
+    DayOfWeek.SUNDAY -> "Sun"
 }
