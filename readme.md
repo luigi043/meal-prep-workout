@@ -4,10 +4,10 @@ Meal Prep Workout is an offline Android app for following a sample weekly routin
 
 ## Build and test
 
-Open this folder in Android Studio. Configure Android SDK platform 36 and a Gradle JDK compatible with Android Gradle Plugin 9.1.1. The app targets Java 17 bytecode and runs on Android API 26 or newer. The project specifies Gradle 9.4.1 in the wrapper properties. Until the wrapper scripts and JAR are restored, use an existing Gradle 9.4.1 installation:
+Open this folder in Android Studio. Configure Android SDK platform 36 and a Gradle JDK compatible with Android Gradle Plugin 9.1.1. The app targets Java 17 bytecode and runs on Android API 26 or newer. Use the included Gradle 9.4.1 wrapper for command-line builds:
 
 ```powershell
-gradle assembleDebug testDebugUnitTest
+.\gradlew.bat assembleDebug testDebugUnitTest
 ```
 
 The debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
