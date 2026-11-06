@@ -140,6 +140,7 @@ fun Plano3MesesApp() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: "welcome"
+    val activeTabRoute = if (currentRoute == "drinks") "meals" else currentRoute
     val showChrome = currentRoute != "welcome"
     val goTo: (String) -> Unit = { route -> navController.goTo(route) }
 
@@ -147,7 +148,7 @@ fun Plano3MesesApp() {
         scope.launch { repository.setCompleted(id, checked) }
     }
 
-    val currentDestination = destinations.firstOrNull { it.route == currentRoute }
+    val currentDestination = destinations.firstOrNull { it.route == activeTabRoute }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -174,7 +175,7 @@ fun Plano3MesesApp() {
                     tonalElevation = 0.dp
                 ) {
                     destinations.forEach { destination ->
-                        val selected = currentRoute == destination.route
+                        val selected = activeTabRoute == destination.route
                         NavigationBarItem(
                             selected = selected,
                             onClick = { goTo(destination.route) },
@@ -223,6 +224,9 @@ fun Plano3MesesApp() {
             }
             composable("meals") {
                 MealsScreen(progress = progress, onToggle = onToggle)
+            }
+            composable("drinks") {
+                MealsScreen(progress = progress, onToggle = onToggle, initialTab = 1)
             }
             composable("shopping") {
                 ShoppingScreen(progress = progress, onToggle = onToggle)
@@ -388,7 +392,7 @@ private fun DashboardScreen(
             }
         }
         item {
-            DrinkSuggestionCard(drink = drink, onOpen = { goTo("meals") })
+            DrinkSuggestionCard(drink = drink, onOpen = { goTo("drinks") })
         }
         item {
             SectionCard(
@@ -566,9 +570,10 @@ private fun WorkoutDetailCard(
 @Composable
 private fun MealsScreen(
     progress: ProgressState,
-    onToggle: (String, Boolean) -> Unit
+    onToggle: (String, Boolean) -> Unit,
+    initialTab: Int = 0
 ) {
-    var tab by rememberSaveable { mutableStateOf(0) }
+    var tab by rememberSaveable { mutableStateOf(initialTab) }
     val tabs = listOf("Meals", "Drinks")
     val uriHandler = LocalUriHandler.current
 

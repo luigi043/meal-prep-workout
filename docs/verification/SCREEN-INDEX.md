@@ -8,7 +8,7 @@ Use a fresh emulator install of `com.luizfit.plan3meses`. Use sample measurement
 | 02-today.png | Open the plan or select **Today** | Toggle a daily task and verify that the completion count updates. |
 | 03-workout.png | Select **Workout** | Change the workout day, mark it complete, switch days and return. |
 | 04-meals.png | Select **Meals** | Scroll through all seven days. |
-| 05-drinks.png | Select **Meals**, then **Drinks** | Mark a recipe prepared and switch tabs. |
+| 05-drinks.png | Select **Meals**, then **Drinks**, or open the drink shortcut from Today | Mark a recipe prepared and switch tabs. |
 | 06-shopping.png | Select **Shopping** | Expand a category and verify that the category and overall counts reflect a checked item. |
 | 07-progress.png | Select **Progress** | Enter sample measurements and mark a weekly task. Relaunch and confirm persistence. |
 

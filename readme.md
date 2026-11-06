@@ -16,4 +16,4 @@ The debug APK is generated at `app/build/outputs/apk/debug/app-debug.apk`.
 
 Checklists and measurements are stored on the device with DataStore. Today's tasks are recorded by local calendar date. Measurements show the latest saved values. The app does not have an account or a synchronization service. Reference links open in the device browser.
 
-Open [the standalone demo](demo/index.html) in a browser to try five sample checklists. It uses synthetic data and keeps checkmarks in memory until reload. The [native screen checklist](docs/verification/SCREEN-INDEX.md) describes the Android verification steps.
+Try five sample checklists in the [public portfolio demo](https://meal-prep-workout-demo.vercel.app/) or open the [standalone HTML](demo/index.html) locally. It uses synthetic data and keeps checkmarks in memory until reload. The [native screen checklist](docs/verification/SCREEN-INDEX.md) describes the Android verification steps.
