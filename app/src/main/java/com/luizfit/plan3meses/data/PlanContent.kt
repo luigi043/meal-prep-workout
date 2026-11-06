@@ -4,12 +4,8 @@ import java.time.DayOfWeek
 
 object PlanContent {
     val metrics = listOf(
-        Metric("Peso atual", "112.4 kg", "Antes: 115 kg"),
-        Metric("Altura", "187 cm", "Corrigido"),
-        Metric("Gordura", "29.3%", "Massa gorda aprox. 32.9 kg"),
-        Metric("Abdomen", "107 cm", "Medir 1x/semana"),
-        Metric("BMR", "2188", "kcal/dia em repouso"),
-        Metric("Meta 12 semanas", "-6 a -10 kg", "Foco em consistencia")
+        Metric("Current weight", "80 kg", "Example measurement"),
+        Metric("Waist", "85 cm", "Example measurement")
     )
 
     val dashboardTasks = listOf(
@@ -39,7 +35,7 @@ object PlanContent {
 
     val meals = listOf(
         MealDay(
-            day = "Segunda",
+            day = "Monday",
             title = "Greek chicken pasta salad",
             meals = listOf(
                 MealItem("7:10", "Aveia proteica fria", "60 g aveia + 200 g iogurte grego + maca + canela. Creatina aqui.", "40-55 g proteina"),
@@ -48,7 +44,7 @@ object PlanContent {
             )
         ),
         MealDay(
-            day = "Terca",
+            day = "Tuesday",
             title = "Atum e grao",
             meals = listOf(
                 MealItem("7:10", "Ovos + pao + tomate", "3 ovos + 2 fatias pao + tomate/espinafres."),
@@ -57,7 +53,7 @@ object PlanContent {
             )
         ),
         MealDay(
-            day = "Quarta",
+            day = "Wednesday",
             title = "Frango mediterranico",
             meals = listOf(
                 MealItem("7:10", "Batido verde + ovos", "Batido detox verde + 2 ovos cozidos + 1 fatia pao."),
@@ -66,7 +62,7 @@ object PlanContent {
             )
         ),
         MealDay(
-            day = "Quinta",
+            day = "Thursday",
             title = "Peru e tomate",
             meals = listOf(
                 MealItem("7:10", "Iogurte + aveia", "250 g iogurte grego + 50 g aveia + banana pequena + canela."),
@@ -75,7 +71,7 @@ object PlanContent {
             )
         ),
         MealDay(
-            day = "Sexta",
+            day = "Friday",
             title = "Pizza chicken controlada",
             meals = listOf(
                 MealItem("7:10", "Batido verde + aveia proteica", "Batido verde + 50 g aveia com iogurte ou whey."),
@@ -84,7 +80,7 @@ object PlanContent {
             )
         ),
         MealDay(
-            day = "Sabado",
+            day = "Saturday",
             title = "Frango e grao",
             meals = listOf(
                 MealItem("7:10", "Ovos + pao + fruta", "3 ovos + 1-2 fatias pao + 1 fruta."),
@@ -93,7 +89,7 @@ object PlanContent {
             )
         ),
         MealDay(
-            day = "Domingo",
+            day = "Sunday",
             title = "Reset e prep",
             meals = listOf(
                 MealItem("Manha", "Batido verde + proteina", "Batido detox verde e depois ovos, iogurte ou frango."),

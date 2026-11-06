@@ -61,3 +61,5 @@ data class ProgressState(
     val weeklyWeight: String = "",
     val weeklyAbdomen: String = ""
 )
+
+internal fun dailyTaskId(id: String, date: java.time.LocalDate): String = "$id@$date"

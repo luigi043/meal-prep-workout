@@ -75,6 +75,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -103,6 +104,7 @@ import com.luizfit.plan3meses.data.MealDay
 import com.luizfit.plan3meses.data.PlanContent
 import com.luizfit.plan3meses.data.ProgressState
 import com.luizfit.plan3meses.data.Recipe
+import com.luizfit.plan3meses.data.dailyTaskId
 import com.luizfit.plan3meses.data.Workout
 import com.luizfit.plan3meses.state.PlanRepository
 import kotlinx.coroutines.launch
@@ -121,11 +123,11 @@ private data class AppDestination(
 )
 
 private val destinations = listOf(
-    AppDestination("dashboard", "Hoje", Icons.Outlined.Home, Icons.Rounded.Home),
-    AppDestination("workout", "Treino", Icons.Outlined.FitnessCenter, Icons.Rounded.FitnessCenter),
-    AppDestination("meals", "Comer", Icons.Outlined.Restaurant, Icons.Rounded.Restaurant),
-    AppDestination("shopping", "Compras", Icons.Outlined.ShoppingCart, Icons.Rounded.ShoppingCart),
-    AppDestination("progress", "Eu", Icons.Outlined.TrendingUp, Icons.Rounded.TrendingUp)
+    AppDestination("dashboard", "Today", Icons.Outlined.Home, Icons.Rounded.Home),
+    AppDestination("workout", "Workout", Icons.Outlined.FitnessCenter, Icons.Rounded.FitnessCenter),
+    AppDestination("meals", "Meals", Icons.Outlined.Restaurant, Icons.Rounded.Restaurant),
+    AppDestination("shopping", "Shopping", Icons.Outlined.ShoppingCart, Icons.Rounded.ShoppingCart),
+    AppDestination("progress", "Progress", Icons.Outlined.TrendingUp, Icons.Rounded.TrendingUp)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,7 +156,7 @@ fun Plano3MesesApp() {
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
-                            currentDestination?.label ?: "Plano 3 Meses",
+                            currentDestination?.label ?: "Meal Prep Workout",
                             style = MaterialTheme.typography.titleLarge
                         )
                     },
@@ -247,7 +249,7 @@ private fun WelcomeScreen(
     goTo: (String) -> Unit
 ) {
     val today = LocalDate.now().dayOfWeek
-    val dailyIds = PlanContent.dashboardTasks.map { it.id }
+    val dailyIds = PlanContent.dashboardTasks.map { dailyTaskId(it.id, LocalDate.now()) }
     val dailyCompleted = progress.completionCountFor(dailyIds)
 
     Column(
@@ -274,7 +276,7 @@ private fun WelcomeScreen(
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                "Plano 3 Meses",
+                "Meal Prep Workout",
                 style = MaterialTheme.typography.displaySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -308,8 +310,8 @@ private fun WelcomeScreen(
                     progressColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(today.portugueseName(), style = MaterialTheme.typography.labelLarge)
-                    Text("Plano de hoje", style = MaterialTheme.typography.titleMedium)
+                    Text(today.englishName(), style = MaterialTheme.typography.labelLarge)
+                    Text("Today's plan", style = MaterialTheme.typography.titleMedium)
                     Text(
                         "$dailyCompleted de ${dailyIds.size} tarefas",
                         style = MaterialTheme.typography.bodyMedium
@@ -327,10 +329,10 @@ private fun WelcomeScreen(
                 .height(56.dp),
             shape = MaterialTheme.shapes.large
         ) {
-            Text("Entrar no plano", style = MaterialTheme.typography.titleMedium)
+            Text("Open plan", style = MaterialTheme.typography.titleMedium)
         }
         Text(
-            "Luiz - 3 meses, foco em consistencia",
+            "Build a consistent routine over 12 weeks",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth(),
@@ -340,7 +342,7 @@ private fun WelcomeScreen(
 }
 
 // ----------------------------------------------------------------------------
-// Dashboard ("Hoje")
+// Dashboard ("Today")
 // ----------------------------------------------------------------------------
 
 @Composable
@@ -352,13 +354,13 @@ private fun DashboardScreen(
     val today = LocalDate.now().dayOfWeek
     val workout = PlanContent.workoutFor(today)
     val drink = PlanContent.drinkFor(today)
-    val dailyIds = PlanContent.dashboardTasks.map { it.id }
+    val dailyIds = PlanContent.dashboardTasks.map { dailyTaskId(it.id, LocalDate.now()) }
     val dailyCompleted = progress.completionCountFor(dailyIds)
 
     ScreenColumn {
         item {
             HeroGreeting(
-                dayName = today.portugueseName(),
+                dayName = today.englishName(),
                 completed = dailyCompleted,
                 total = dailyIds.size
             )
@@ -371,15 +373,16 @@ private fun DashboardScreen(
             )
         }
         item {
-            QuickStatsRow()
+            QuickStatsRow(progress)
         }
         item {
             SectionCard(
-                title = "Tarefas de hoje",
-                subtitle = "Marca o que cumpriste",
+                title = "Today's checklist",
+                subtitle = "Check off each completed task",
                 icon = Icons.Outlined.Bolt
             ) {
-                PlanContent.dashboardTasks.forEach { task ->
+                PlanContent.dashboardTasks.forEach { template ->
+                    val task = template.copy(id = dailyTaskId(template.id, LocalDate.now()))
                     CheckTaskRow(task, progress.completedIds.contains(task.id), onToggle)
                 }
             }
@@ -424,13 +427,13 @@ private fun WorkoutScreen(
     val uriHandler = LocalUriHandler.current
     val today = LocalDate.now().dayOfWeek
     val initialIndex = PlanContent.workouts.indexOfFirst { it.dayOfWeek == today }.coerceAtLeast(0)
-    var selectedIndex by remember { mutableStateOf(initialIndex) }
+    var selectedIndex by rememberSaveable { mutableStateOf(initialIndex) }
     val selected = PlanContent.workouts[selectedIndex]
 
     ScreenColumn {
         item {
             SectionHeader(
-                title = "Treino",
+                title = "Workout",
                 subtitle = "Terca a sabado as 18:15"
             )
         }
@@ -543,7 +546,7 @@ private fun WorkoutDetailCard(
                     ButtonDefaults.filledTonalButtonColors()
                 }
             ) {
-                Text(if (checked) "Treino concluido" else "Marcar como feito")
+                Text(if (checked) "Workout complete" else "Mark complete")
             }
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -565,8 +568,8 @@ private fun MealsScreen(
     progress: ProgressState,
     onToggle: (String, Boolean) -> Unit
 ) {
-    var tab by remember { mutableStateOf(0) }
-    val tabs = listOf("Refeicoes", "Bebidas")
+    var tab by rememberSaveable { mutableStateOf(0) }
+    val tabs = listOf("Meals", "Drinks")
     val uriHandler = LocalUriHandler.current
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -587,7 +590,7 @@ private fun MealsScreen(
             0 -> ScreenColumn {
                 item {
                     SectionHeader(
-                        title = "Refeicoes",
+                        title = "Meals",
                         subtitle = "Pasta salads, frango, pizza controlada"
                     )
                 }
@@ -611,7 +614,7 @@ private fun MealsScreen(
             1 -> ScreenColumn {
                 item {
                     SectionHeader(
-                        title = "Bebidas",
+                        title = "Drinks",
                         subtitle = "Hidratacao com variety, 0 kcal liquidas"
                     )
                 }
@@ -670,7 +673,7 @@ private fun RecipeCard(
                 ButtonDefaults.filledTonalButtonColors()
             }
         ) {
-            Text(if (checked) "Preparada" else "Marcar preparada")
+            Text(if (checked) "Prepared" else "Mark prepared")
         }
         BulletLine("Ingredientes", recipe.ingredients)
         recipe.steps.forEachIndexed { index, step ->
@@ -695,7 +698,7 @@ private fun ShoppingScreen(
     ScreenColumn {
         item {
             SectionHeader(
-                title = "Compras",
+                title = "Shopping",
                 subtitle = "Toca para marcar comprado"
             )
         }
@@ -724,7 +727,7 @@ private fun ExpandableCategoryCard(
     progress: ProgressState,
     onToggle: (String, Boolean) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
     val done = items.count { progress.completedIds.contains(it.id) }
 
     Card(
@@ -766,7 +769,7 @@ private fun ExpandableCategoryCard(
 }
 
 // ----------------------------------------------------------------------------
-// Progress ("Eu")
+// Progress ("Progress")
 // ----------------------------------------------------------------------------
 
 @Composable
@@ -779,7 +782,7 @@ private fun ProgressScreen(
     ScreenColumn {
         item {
             SectionHeader(
-                title = "Progresso",
+                title = "Progress",
                 subtitle = "Peso, abdomen e check semanal"
             )
         }
@@ -788,14 +791,14 @@ private fun ProgressScreen(
         }
         item {
             SectionCard(
-                title = "Medidas semanais",
+                title = "Weekly measurements",
                 subtitle = "Regista 1x por semana, de manha",
                 icon = Icons.Outlined.Straighten
             ) {
                 OutlinedTextField(
                     value = progress.weeklyWeight,
                     onValueChange = onWeightChange,
-                    label = { Text("Peso atual") },
+                    label = { Text("Current weight") },
                     suffix = { Text("kg") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -806,7 +809,7 @@ private fun ProgressScreen(
                 OutlinedTextField(
                     value = progress.weeklyAbdomen,
                     onValueChange = onAbdomenChange,
-                    label = { Text("Abdomen") },
+                    label = { Text("Waist") },
                     suffix = { Text("cm") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -817,7 +820,7 @@ private fun ProgressScreen(
         }
         item {
             SectionCard(
-                title = "Checklist semanal",
+                title = "Weekly checklist",
                 subtitle = "Marca quando estiver feito",
                 icon = Icons.Outlined.TrendingUp
             ) {
@@ -848,7 +851,7 @@ private fun ProgressScreen(
                 icon = Icons.Outlined.TrendingUp
             ) {
                 BulletLine("Peso", "-6 a -10 kg se a consistencia estiver boa.")
-                BulletLine("Abdomen", "-6 a -10 cm e roupa mais solta.")
+                BulletLine("Waist", "-6 a -10 cm e roupa mais solta.")
                 BulletLine("Abs", "Definicao forte pode precisar de mais tempo. A base comeca agora.")
             }
         }
@@ -884,7 +887,7 @@ private fun HeroGreeting(dayName: String, completed: Int, total: Int) {
                 progressColor = MaterialTheme.colorScheme.onPrimary
             )
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("Bom dia, Luiz", style = MaterialTheme.typography.titleMedium)
+                Text("Welcome back", style = MaterialTheme.typography.titleMedium)
                 Text(dayName, style = MaterialTheme.typography.headlineMedium)
                 Text(
                     "$completed/$total tarefas hoje",
@@ -924,7 +927,7 @@ private fun TodayWorkoutCard(
                     )
                 }
                 Spacer(Modifier.width(12.dp))
-                Text("Treino de hoje", style = MaterialTheme.typography.titleMedium)
+                Text("Today's workout", style = MaterialTheme.typography.titleMedium)
             }
             if (workout != null) {
                 Text(workout.title, style = MaterialTheme.typography.headlineSmall)
@@ -939,7 +942,7 @@ private fun TodayWorkoutCard(
                     color = MaterialTheme.colorScheme.primary
                 )
             } else {
-                Text("Descanso ativo", style = MaterialTheme.typography.headlineSmall)
+                Text("Active recovery", style = MaterialTheme.typography.headlineSmall)
                 Text(
                     fallbackText,
                     style = MaterialTheme.typography.bodyMedium,
@@ -951,18 +954,17 @@ private fun TodayWorkoutCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text(if (workout != null) "Ver treino completo" else "Abrir treinos")
+                Text(if (workout != null) "View workout" else "Browse workouts")
             }
         }
     }
 }
 
 @Composable
-private fun QuickStatsRow() {
+private fun QuickStatsRow(progress: ProgressState) {
     val stats = listOf(
-        Triple("112.4", "kg", "peso"),
-        Triple("29.3%", "", "gordura"),
-        Triple("107", "cm", "abdomen")
+        Triple(progress.weeklyWeight.ifBlank { "—" }, "kg", "Weight"),
+        Triple(progress.weeklyAbdomen.ifBlank { "—" }, "cm", "Waist")
     )
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         stats.forEach { (value, unit, label) ->
@@ -1031,7 +1033,7 @@ private fun DrinkSuggestionCard(drink: Recipe, onOpen: () -> Unit) {
                 Icon(Icons.Outlined.WaterDrop, contentDescription = null)
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("Bebida de hoje", style = MaterialTheme.typography.labelLarge)
+                Text("Today's drink", style = MaterialTheme.typography.labelLarge)
                 Text(drink.title, style = MaterialTheme.typography.titleMedium)
                 Text(
                     drink.timing,
@@ -1337,22 +1339,22 @@ private fun todayWorkoutOrRest(dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek)
 private fun ProgressState.completionCountFor(ids: List<String>): Int =
     ids.count { completedIds.contains(it) }
 
-private fun DayOfWeek.portugueseName(): String = when (this) {
-    DayOfWeek.MONDAY -> "Segunda"
-    DayOfWeek.TUESDAY -> "Terca"
-    DayOfWeek.WEDNESDAY -> "Quarta"
-    DayOfWeek.THURSDAY -> "Quinta"
-    DayOfWeek.FRIDAY -> "Sexta"
-    DayOfWeek.SATURDAY -> "Sabado"
-    DayOfWeek.SUNDAY -> "Domingo"
+private fun DayOfWeek.englishName(): String = when (this) {
+    DayOfWeek.MONDAY -> "Monday"
+    DayOfWeek.TUESDAY -> "Tuesday"
+    DayOfWeek.WEDNESDAY -> "Wednesday"
+    DayOfWeek.THURSDAY -> "Thursday"
+    DayOfWeek.FRIDAY -> "Friday"
+    DayOfWeek.SATURDAY -> "Saturday"
+    DayOfWeek.SUNDAY -> "Sunday"
 }
 
 private fun DayOfWeek.shortLabel(): String = when (this) {
-    DayOfWeek.MONDAY -> "Seg"
-    DayOfWeek.TUESDAY -> "Ter"
-    DayOfWeek.WEDNESDAY -> "Qua"
-    DayOfWeek.THURSDAY -> "Qui"
-    DayOfWeek.FRIDAY -> "Sex"
-    DayOfWeek.SATURDAY -> "Sab"
+    DayOfWeek.MONDAY -> "Mon"
+    DayOfWeek.TUESDAY -> "Tue"
+    DayOfWeek.WEDNESDAY -> "Wed"
+    DayOfWeek.THURSDAY -> "Thu"
+    DayOfWeek.FRIDAY -> "Fri"
+    DayOfWeek.SATURDAY -> "Sat"
     DayOfWeek.SUNDAY -> "Dom"
 }
